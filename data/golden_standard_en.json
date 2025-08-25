@@ -1,0 +1,262 @@
+[
+  {
+    "id": 1,
+    "input_text": "Another day wasted. Sat in front of the monitor for 8 hours, but only did about 20% of what I planned. Constantly distracted by social media. Feel tired and completely useless. Let the team down again. Everyone will figure out I'm not up to the job.",
+    "expected_output": {
+      "sentiment": "negative",
+      "entities": {
+        "emotions": ["guilt", "fatigue", "helplessness"],
+        "skills": ["concentration", "time management", "teamwork"]
+      },
+      "distortions": ["catastrophizing", "labeling", "mind_reading"],
+      "confidence_score": 0.94
+    }
+  },
+  {
+    "id": 2,
+    "input_text": "I have an exam tomorrow and I feel paralyzed. My mind is foggy, can't remember anything. If I fail, I'll get expelled, my parents will be furious, and my life will be ruined. I should have studied harder. I SHOULD have.",
+    "expected_output": {
+      "sentiment": "negative",
+      "entities": {
+        "emotions": ["panic", "anxiety", "pressure"],
+        "skills": ["exam preparation", "information retention"]
+      },
+      "distortions": ["catastrophizing", "should_statements", "black_and_white_thinking"],
+      "confidence_score": 0.97
+    }
+  },
+  {
+    "id": 3,
+    "input_text": "Running like a hamster on a wheel all day: cooking, cleaning, kids, laundry... By evening I'm exhausted but feel like I didn't accomplish anything. Not a minute for myself. My husband came home from work and asked me not to bother him—he has enough on his plate. As if my things don't matter. I'm just a shadow, not a person.",
+    "expected_output": {
+      "sentiment": "negative",
+      "entities": {
+        "emotions": ["exhaustion", "loneliness", "invisibility"],
+        "skills": ["household chores", "self-organization", "asking for help"]
+      },
+      "distortions": ["mental_filter", "disqualifying_the_positive", "emotional_reasoning"],
+      "confidence_score": 0.91
+    }
+  },
+  {
+    "id": 4,
+    "input_text": "The apartment is quiet. Unusually so. Friends are asking me to go out, to distract myself. They say 'don't dwell on it'. Easy for them to say. Starting over from scratch at my age is a death sentence. A lonely old age is guaranteed. It will never be like it was before.",
+    "expected_output": {
+      "sentiment": "negative",
+      "entities": {
+        "emotions": ["melancholy", "loneliness", "hopelessness"],
+        "skills": ["socialization", "future planning"]
+      },
+      "distortions": ["catastrophizing", "fortune_telling", "black_and_white_thinking"],
+      "confidence_score": 0.89
+    }
+  },
+  {
+    "id": 5,
+    "input_text": "Closed a major deal. The team is celebrating, but I feel an anxious emptiness inside. Yes, there's a result, but we could have achieved more if I had negotiated better at the second stage. Can't stop at what's been achieved. To relax means to give up.",
+    "expected_output": {
+      "sentiment": "mixed",
+      "entities": {
+        "emotions": ["anxiety", "dissatisfaction"],
+        "skills": ["negotiation", "team management", "self-assessment"]
+      },
+      "distortions": ["disqualifying_the_positive", "should_statements", "black_and_white_thinking"],
+      "confidence_score": 0.93
+    }
+  },
+  {
+    "id": 6,
+    "input_text": "Everything annoys me. My parents just don't understand. They interrogated me about school. I won't tell them anything, they won't understand anyway. They're always on their own wavelength.",
+    "expected_output": {
+      "sentiment": "negative",
+      "entities": {
+        "emotions": ["anger", "resentment", "misunderstanding"],
+        "skills": ["communication with parents", "expressing emotions"]
+      },
+      "distortions": ["overgeneralization", "mind_reading"],
+      "confidence_score": 0.87
+    }
+  },
+  {
+    "id": 7,
+    "input_text": "My daughter called today, asked how I was doing. She says: 'Mom, you should go out somewhere, socialize with people.' But where should I go? My friends have moved away, some to their dachas, some to their children. Sitting alone within four walls, the TV blaring. I have children, but I feel like no one needs me.",
+    "expected_output": {
+      "sentiment": "mixed",
+      "entities": {
+        "emotions": ["loneliness", "sadness", "longing"],
+        "skills": ["socialization", "finding activities"]
+      },
+      "distortions": ["catastrophizing", "emotional_reasoning"],
+      "confidence_score": 0.92
+    }
+  },
+  {
+    "id": 8,
+    "input_text": "He hasn't texted for two hours. I know he's in a meeting, but I can't shake the thought that I annoy him and he's looking for someone else. I'm on pins and needles. Probably, I'm really not interesting enough and he's about to dump me. It will be the end.",
+    "expected_output": {
+      "sentiment": "negative",
+      "entities": {
+        "emotions": ["anxiety", "insecurity", "fear of rejection"],
+        "skills": ["anxiety regulation", "trust in relationships"]
+      },
+      "distortions": ["mind_reading", "catastrophizing", "magnification"],
+      "confidence_score": 0.96
+    }
+  },
+  {
+    "id": 9,
+    "input_text": "It seems like I have everything: job, family, home. But inside - emptiness. Like running on a treadmill that goes nowhere. I don't feel the excitement about work anymore, became too cautious. Where's that guy who was burning with ideas? He's gone.",
+    "expected_output": {
+      "sentiment": "mixed",
+      "entities": {
+        "emotions": ["existential emptiness", "nostalgia", "apathy"],
+        "skills": ["finding motivation", "risk-taking"]
+      },
+      "distortions": ["black_and_white_thinking", "labeling"],
+      "confidence_score": 0.9
+    }
+  },
+  {
+    "id": 10,
+    "input_text": "Had a silly argument with Lena. I was wrong of course, but she could have understood! Now I'm sitting here crying. Why does it always happen this way? I always push everyone away from me. Probably, I'm a terrible friend.",
+    "expected_output": {
+      "sentiment": "negative",
+      "entities": {
+        "emotions": ["guilt", "sadness", "remorse", "loneliness"],
+        "skills": ["conflict resolution", "self-reflection"]
+      },
+      "distortions": ["overgeneralization", "labeling", "should_statements"],
+      "confidence_score": 0.88
+    }
+  },
+  {
+    "id": 11,
+    "input_text": "Incredibly proud of myself today! A year ago I was afraid to even call a stranger, and today I gave a full presentation to the board of directors. I was nervous, but I managed. Got approval and praise from the boss. I feel like I'm growing and can do more.",
+    "expected_output": {
+      "sentiment": "positive",
+      "entities": {
+        "emotions": ["pride", "confidence", "joy"],
+        "skills": ["public speaking", "overcoming fear", "self-analysis"]
+      },
+      "distortions": [],
+      "confidence_score": 0.98
+    }
+  },
+  {
+    "id": 12,
+    "input_text": "Went to the store, bought groceries for the week. Made a list in advance, so it was quick and efficient. Planning to watch that new series everyone's recommending tonight. Nothing special.",
+    "expected_output": {
+      "sentiment": "neutral",
+      "entities": {
+        "emotions": [],
+        "skills": ["planning", "organization"]
+      },
+      "distortions": [],
+      "confidence_score": 0.85
+    }
+  },
+  {
+    "id": 13,
+    "input_text": "Had a tough meeting today. Got criticized for miscalculations in the project. At first I wanted to make excuses and get angry, but I took a pause, listened through, and focused on constructive suggestions. Eventually we found a solution together. I'm pleased I managed to keep my composure.",
+    "expected_output": {
+      "sentiment": "positive",
+      "entities": {
+        "emotions": ["satisfaction", "calmness"],
+        "skills": ["self-control", "handling criticism", "teamwork"]
+      },
+      "distortions": [],
+      "confidence_score": 0.91
+    }
+  },
+  {
+    "id": 14,
+    "input_text": "Rain outside, hasn't stopped all day. Finished the book I'd been reading for a long time. Left with this feeling of emptiness and slight sadness, like always after a good story. Sorry it's over.",
+    "expected_output": {
+      "sentiment": "neutral",
+      "entities": {
+        "emotions": ["slight sadness", "nostalgia"],
+        "skills": []
+      },
+      "distortions": [],
+      "confidence_score": 0.82
+    }
+  },
+  {
+    "id": 15,
+    "input_text": "Went out into nature with friends for the first time in ages. Had a barbecue, laughed, remembered old stories. Sun, fresh air... I really missed this simple human connection. Feel recharged and alive.",
+    "expected_output": {
+      "sentiment": "positive",
+      "entities": {
+        "emotions": ["joy", "nostalgia", "energy"],
+        "skills": ["socializing", "organizing leisure"]
+      },
+      "distortions": [],
+      "confidence_score": 0.96
+    }
+  },
+  {
+    "id": 16,
+    "input_text": "Seems I made a mistake in the report. A colleague pointed out an inaccuracy. Sitting here thinking: 'How could I miss this? Now everyone will think I'm careless and sloppy.' Although there haven't been such complaints before. Need to double-check everything ten times.",
+    "expected_output": {
+      "sentiment": "negative",
+      "entities": {
+        "emotions": ["anxiety", "guilt", "insecurity"],
+        "skills": ["handling mistakes", "attention to detail"]
+      },
+      "distortions": ["catastrophizing", "mind_reading", "labeling"],
+      "confidence_score": 0.93
+    }
+  },
+  {
+    "id": 17,
+    "input_text": "Met an old classmate. She looks so great, achieved everything she dreamed of. And me... I'm stuck in one place. No, I have achievements too, but compared to hers they seem so small and insignificant.",
+    "expected_output": {
+      "sentiment": "mixed",
+      "entities": {
+        "emotions": ["envy", "insecurity", "disappointment"],
+        "skills": ["self-esteem", "social comparison"]
+      },
+      "distortions": ["disqualifying_the_positive", "mental_filter"],
+      "confidence_score": 0.89
+    }
+  },
+  {
+    "id": 18,
+    "input_text": "Did everything according to plan: morning run, work, English lesson in the evening. Seems like a productive day, but there's this mechanical feeling and emptiness inside. Like a robot executing a program. Where's the joy and satisfaction?",
+    "expected_output": {
+      "sentiment": "mixed",
+      "entities": {
+        "emotions": ["apathy", "emptiness", "disappointment"],
+        "skills": ["self-discipline", "planning", "time management"]
+      },
+      "distortions": ["emotional_reasoning", "should_statements"],
+      "confidence_score": 0.87
+    }
+  },
+  {
+    "id": 19,
+    "input_text": "My child got an A in a difficult subject. Beaming with happiness. And I'm sitting here thinking: 'It's just one grade, can't relax. There are still plenty of exams ahead.' My husband laughs at me, says I always look for reasons to worry instead of being happy.",
+    "expected_output": {
+      "sentiment": "mixed",
+      "entities": {
+        "emotions": ["anxiety", "wariness"],
+        "skills": ["celebrating success", "anxiety awareness"]
+      },
+      "distortions": ["mental_filter", "disqualifying_the_positive", "fortune_telling"],
+      "confidence_score": 0.94
+    }
+  },
+  {
+    "id": 20,
+    "input_text": "Decided to see a therapist. The first session was strange. Talked about things I've never told anyone. Not sure if it will help, and if I looked stupid. But some weight lifted off my shoulders. Wonder what comes next.",
+    "expected_output": {
+      "sentiment": "mixed",
+      "entities": {
+        "emotions": ["hope", "uncertainty", "relief"],
+        "skills": ["seeking help", "self-reflection", "openness"]
+      },
+      "distortions": ["mind_reading"],
+      "confidence_score": 0.86
+    }
+  }
+]

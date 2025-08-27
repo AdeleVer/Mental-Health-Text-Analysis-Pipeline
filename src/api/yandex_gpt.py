@@ -1,6 +1,6 @@
 """
 YandexGPT API client for mental health text analysis.
-Handles prompt assembly and API communication for both English and Russian.
+Handles prompt assembly and API communication for both English and Russian. 
 """
 
 import json

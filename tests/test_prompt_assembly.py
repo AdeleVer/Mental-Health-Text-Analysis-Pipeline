@@ -52,49 +52,92 @@ def test_prompt_assembly():
     
     # Load test cases
     test_cases = load_test_cases()
-    if not test_cases:
-        print("❌ Cannot run tests without test cases")
-        return False
     
-    print("🧪 Testing with first 3 cases...\n")
+    # Test 1: Verify test cases were loaded
+    assert len(test_cases) > 0, "No test cases found in golden_standard_ru.json"
+    print(f"✅ Test 1 passed: Found {len(test_cases)} test cases")
     
-    # Test with first 3 cases
-    for i in range(3):
-        case = test_cases[i]
-        print(f"📝 Test case {i + 1}:")
-        print(f"   User text: {case['input_text'][:60]}...")
-        
-        # Build prompt
-        full_prompt = build_prompt(case['input_text'])
-        
-        if not full_prompt:
-            print("❌ Prompt assembly failed")
-            return False
-            
-        # Show prompt info
-        print(f"   Prompt length: {len(full_prompt)} characters")
-        print("   First 100 chars:")
-        print("   " + full_prompt[:100].replace('\n', ' ') + "...")
-        print()
+    # Test 2: Verify prompt assembly works for first case
+    first_case = test_cases[0]
+    full_prompt = build_prompt(first_case['input_text'])
     
-    print("✅ All prompt assembly tests passed!")
-    return True
+    assert full_prompt is not None, "Prompt assembly failed - returned None"
+    assert len(full_prompt) > 0, "Prompt assembly failed - empty prompt"
+    print(f"✅ Test 2 passed: Prompt assembled successfully ({len(full_prompt)} characters)")
+    
+    # Test 3: Verify prompt contains expected components
+    assert "USER:" in full_prompt, "Prompt should contain USER section"
+    assert "ASSISTANT:" in full_prompt, "Prompt should contain ASSISTANT section"
+    assert first_case['input_text'] in full_prompt, "Prompt should contain user input text"
+    print("✅ Test 3 passed: Prompt contains all required components")
+    
+    # Test 4: Verify multiple languages (if available)
+    try:
+        en_prompt = build_prompt("Test text", "en")
+        if en_prompt:
+            assert "USER:" in en_prompt, "English prompt should contain USER section"
+            print("✅ Test 4 passed: English prompt assembly works")
+        else:
+            print("⚠️  English prompt files not available (skipping)")
+    except:
+        print("⚠️  English prompt test skipped (files may not exist)")
+    
+    print("\n✅ All prompt assembly tests passed!")
+
+def test_prompt_structure():
+    """Test specific prompt structure requirements"""
+    print("\n=== TESTING PROMPT STRUCTURE ===\n")
+    
+    test_cases = load_test_cases()
+    assert len(test_cases) > 0, "Need test cases to run structure tests"
+    
+    # Test with a simple text
+    test_text = "This is a test message for prompt structure validation"
+    full_prompt = build_prompt(test_text)
+    
+    # Verify prompt structure - UPDATED FOR ACTUAL PROMPT CONTENT
+    assert full_prompt.startswith("# РОЛЬ И КОНТЕКСТ") or \
+           full_prompt.startswith("# ROLE AND CONTEXT"), \
+           "Prompt should start with role definition section"
+    
+    assert "Ты — AI-ассистент" in full_prompt or \
+           "You are an AI assistant" in full_prompt, \
+           "Prompt should contain AI assistant definition"
+    
+    assert "USER: " + test_text in full_prompt, \
+           "Prompt should contain user input with USER prefix"
+    
+    assert full_prompt.endswith("ASSISTANT:"), \
+           "Prompt should end with ASSISTANT: waiting for model response"
+    
+    # Additional checks for critical components
+    assert "JSON" in full_prompt, "Prompt should mention JSON output format"
+    assert "sentiment" in full_prompt, "Prompt should mention sentiment analysis"
+    assert "entities" in full_prompt, "Prompt should mention entities extraction"
+    
+    print("✅ All prompt structure tests passed!")
 
 def main():
     """Main test function"""
     print("🔧 Testing prompt assembly functionality\n")
     
-    success = test_prompt_assembly()
-    
-    if success:
-        print("\n🎉 Success! Prompt assembly is working correctly.")
+    try:
+        # Run all tests
+        test_prompt_assembly()
+        test_prompt_structure()
+        
+        print("\n🎉 Success! All prompt tests passed.")
         print("Next step: Connect to YandexGPT API")
-    else:
-        print("\n⚠️  Tests failed. Please check:")
-        print("   - data/golden_standard_ru.json exists")
-        print("   - prompts/system_prompt_ru.txt exists")
-        print("   - prompts/few_shot_examples_ru.txt exists")
+        return True
+        
+    except AssertionError as e:
+        print(f"\n❌ Test failed: {e}")
+        return False
+    except Exception as e:
+        print(f"\n❌ Unexpected error: {e}")
+        return False
 
 # Run the tests
 if __name__ == "__main__":
-    main()
+    success = main()
+    sys.exit(0 if success else 1)

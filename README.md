@@ -7,6 +7,8 @@
 A pipeline for analyzing mental state through text messages. The system detects emotional tone, cognitive distortions, and extracts key entities from user text using YandexGPT API.
 
 ## 🏗️ Project Structure
+
+```bash
 mental-health-text-analysis-pipeline/
 ├── 📁 src/ # Source code
 │ ├── 📁 api/ # Flask backend API
@@ -25,6 +27,7 @@ mental-health-text-analysis-pipeline/
 ├── .gitignore
 ├── LICENSE
 └── README.md
+```
 
 ## 🚀 Current Progress
 
@@ -45,8 +48,10 @@ mental-health-text-analysis-pipeline/
 ```bash
 # Run prompt assembly tests
 python tests/test_prompt_assembly.py
+```
 
-🛠️ Tech Stack
+## 🛠️ Tech Stack
+
 Python 3.12.10
 
 Flask - Web framework
@@ -59,7 +64,7 @@ Streamlit - Analytics dashboard
 
 Docker - Containerization
 
-📋 Next Steps
+## 📋 Next Steps
 Implement YandexGPT API client
 
 Create Flask API endpoints
@@ -70,8 +75,13 @@ Develop Streamlit dashboard
 
 Add comprehensive test suite
 
-👩‍💻 Author
+
+## 👩‍💻 Автор
 AdeleVer - Prompt Engineering Specialist
 
-📄 License
+GitHub: AdeleVer
+
+Project: Mental Health Text Analysis Pipeline
+
+## 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.

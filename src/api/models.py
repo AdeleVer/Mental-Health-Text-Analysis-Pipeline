@@ -2,8 +2,8 @@
 Pydantic models for request/response validation.
 """
 
-from pydantic import BaseModel, Field, confloat
-from typing import List, Literal, Optional
+from pydantic import BaseModel, Field
+from typing import List, Literal 
 
 class Entities(BaseModel):
     """Entity extraction model for emotions and skills"""
@@ -20,4 +20,4 @@ class AnalysisResponse(BaseModel):
     sentiment: Literal["positive", "negative", "neutral", "mixed"] = Field(..., description="Overall sentiment")
     entities: Entities = Field(..., description="Extracted entities and emotions")
     distortions: List[str] = Field(default_factory=list, description="Cognitive distortions detected")
-    confidence_score: confloat(ge=0.0, le=1.0) = Field(..., description="Model confidence score")
+    confidence_score: float = Field(..., ge=0.0, le=1.0, description="Model confidence score") 

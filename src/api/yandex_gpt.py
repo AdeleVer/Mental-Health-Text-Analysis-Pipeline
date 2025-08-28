@@ -9,7 +9,7 @@ import sys
 import logging
 from pathlib import Path
 from typing import Dict, Any
-import aiohttp
+import requests
 from pydantic import ValidationError
 
 # Add project root to Python path for imports
@@ -40,7 +40,7 @@ class YandexGPTClient:
         }
         logger.info("YandexGPTClient initialized successfully")
     
-    async def _load_prompt_file(self, filename: str) -> str:
+    def _load_prompt_file(self, filename: str) -> str:
         """Load prompt content from file."""
         try:
             filepath = os.path.join('prompts', filename)
@@ -57,15 +57,15 @@ class YandexGPTClient:
             logger.error(error_msg)
             raise Exception(error_msg)
     
-    async def _build_complete_prompt(self, text: str, language: str) -> str:
+    def _build_complete_prompt(self, text: str, language: str) -> str:
         """Build complete prompt with system instructions and user text."""
         try:
             # Load appropriate prompts based on language
             system_prompt_file = f"system_prompt_{language}.txt"
             examples_file = f"few_shot_examples_{language}.txt"
             
-            system_prompt = await self._load_prompt_file(system_prompt_file)
-            few_shot_examples = await self._load_prompt_file(examples_file)
+            system_prompt = self._load_prompt_file(system_prompt_file)
+            few_shot_examples = self._load_prompt_file(examples_file)
             
             # Construct the complete prompt
             complete_prompt = f"""{system_prompt}
@@ -85,7 +85,7 @@ ASSISTANT RESPONSE (JSON ONLY):
             logger.error(error_msg)
             raise Exception(error_msg)
     
-    async def _call_yandex_gpt(self, prompt: str) -> Dict[str, Any]:
+    def _call_yandex_gpt(self, prompt: str) -> Dict[str, Any]:
         """Make actual API call to YandexGPT."""
         payload = {
             "modelUri": f"gpt://{self.folder_id}/yandexgpt",
@@ -108,25 +108,24 @@ ASSISTANT RESPONSE (JSON ONLY):
         
         try:
             logger.info("Sending request to YandexGPT API")
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
+            response = requests.post(
                     self.api_url, 
                     headers=self.headers, 
                     json=payload,
                     timeout=30
-                ) as response:
+                )
                     
-                    if response.status != 200:
-                        error_text = await response.text()
-                        error_msg = f"YandexGPT API error {response.status}: {error_text}"
-                        logger.error(error_msg)
-                        raise Exception(error_msg)
+            if response.status_code != 200:
+                    error_text = response.text
+                    error_msg = f"YandexGPT API error {response.status}: {error_text}"
+                    logger.error(error_msg)
+                    raise Exception(error_msg)
                     
-                    result = await response.json()
-                    logger.info("Successfully received response from YandexGPT API")
-                    return result
+            result = response.json()
+            logger.info("Successfully received response from YandexGPT API")
+            return result
                     
-        except aiohttp.ClientError as e:
+        except requests.exceptions.RequestException as e:
             error_msg = f"Network error calling YandexGPT: {str(e)}"
             logger.error(error_msg)
             raise Exception(error_msg)
@@ -135,7 +134,7 @@ ASSISTANT RESPONSE (JSON ONLY):
             logger.error(error_msg)
             raise Exception(error_msg)
     
-    async def analyze_text(self, text: str, language: str = "ru") -> AnalysisResponse:
+    def analyze_text(self, text: str, language: str = "ru") -> AnalysisResponse:
         """
         Main method to analyze text using YandexGPT.
         
@@ -155,10 +154,10 @@ ASSISTANT RESPONSE (JSON ONLY):
         
         try:
             # Build the complete prompt
-            prompt = await self._build_complete_prompt(analysis_request.text, analysis_request.language)
+            prompt = self._build_complete_prompt(analysis_request.text, analysis_request.language)
             
             # Call YandexGPT API
-            api_response = await self._call_yandex_gpt(prompt)
+            api_response = self._call_yandex_gpt(prompt)
             
             # Extract and clean the response text
             response_text = api_response.get('result', {}).get('alternatives', [{}])[0].get('message', {}).get('text', '')

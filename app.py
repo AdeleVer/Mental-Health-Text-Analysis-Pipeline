@@ -3,7 +3,7 @@ Flask server for Mental Health Text Analysis API.
 """
 
 import logging
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from src.api.models import AnalysisRequest
 from src.api.yandex_gpt import get_yandex_gpt_client
 
@@ -12,8 +12,13 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+    """Render main page with analysis form."""
+    return render_template('index.html')
+
 @app.route('/api/analyze', methods=['POST'])
-async def analyze_text():
+def analyze_text():
     """Analyze text using YandexGPT API."""
     try:
         client = get_yandex_gpt_client()
@@ -24,7 +29,7 @@ async def analyze_text():
         analysis_request = AnalysisRequest(**request_data)
         logger.info(f"Analyzing text: {analysis_request.text[:50]}...")
         
-        analysis_result = await client.analyze_text(
+        analysis_result = client.analyze_text(
             text=analysis_request.text,
             language=analysis_request.language
         )

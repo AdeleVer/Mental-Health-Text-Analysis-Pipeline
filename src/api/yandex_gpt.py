@@ -195,5 +195,11 @@ ASSISTANT RESPONSE (JSON ONLY):
             logger.error(error_msg)
             raise Exception(error_msg)
 
-# Global client instance
-yandex_gpt_client = YandexGPTClient()
+_yandex_gpt_client_instance = None
+
+def get_yandex_gpt_client():
+    """Get or create YandexGPT client instance."""
+    global _yandex_gpt_client_instance
+    if _yandex_gpt_client_instance is None:
+        _yandex_gpt_client_instance = YandexGPTClient()
+    return _yandex_gpt_client_instance

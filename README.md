@@ -1,29 +1,50 @@
 # Mental Health Text Analysis Pipeline
 
-**Status:** 🚧 In Development | Active development phase
+### MindAnalyzer: AI-Powered Emotional State Analysis
+
+## Status: ✅ Operational | Basic functionality complete | Active development
 
 ## 📖 About The Project
+A web application for emotional state text analysis.
+The system detects emotional tone, cognitive patterns, and extracts key entities from user text. 
 
-A pipeline for analyzing mental state through text messages. The system detects emotional tone, cognitive distortions, and extracts key entities from user text using YandexGPT API.
+Key Features:
+
+🤖 AI-powered text analysis using YandexGPT
+
+🌐 Bilingual interface (English/Russian)
+
+🎯 Emotion and cognitive pattern detection
+
+⚠️ Ethical disclaimer and safety measures
+
+💾 Ready for database integration
 
 ## 🏗️ Project Structure
 
 ```bash
 mental-health-text-analysis-pipeline/
-├── 📁 src/ # Source code
-│ ├── 📁 api/ # Flask backend API
-│ └── 📁 dashboard/ # Streamlit dashboard
-├── 📁 data/ # Datasets and golden standards
-│ ├── golden_standard_ru.json
-│ └── golden_standard_en.json
-├── 📁 prompts/ # LLM prompts
-│ ├── system_prompt_ru.txt
-│ ├── system_prompt_en.txt
-│ ├── few_shot_examples_ru.txt
-│ └── few_shot_examples_en.txt
-├── 📁 tests/ # Test files
-│ └── test_prompt_assembly.py
-├── 📁 venv/ # Virtual environment
+├── app.py                      # Flask server (main application)
+├── templates/
+│   └── index.html 
+├── static/
+│   ├── css/style.css 
+│   └── js/app.js           
+├── src/
+│   └── api/
+│       ├── models.py          # Pydantic request/response models
+│       └── yandex_gpt.py      # YandexGPT API client implementation
+├── prompts/                   # LLM prompts for RU/EN languages
+│   ├── system_prompt_en.txt
+│   ├── system_prompt_ru.txt
+│   ├── few_shot_examples_en.txt
+│   └── few_shot_examples_ru.txt
+├── data/                      # Test datasets
+│   ├── golden_standard_en.json
+│   └── golden_standard_ru.json
+├── tests/                     # Test suite
+├── .env 
+├── venv/ 
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -32,16 +53,27 @@ mental-health-text-analysis-pipeline/
 ## 🚀 Current Progress
 
 ### ✅ Completed:
-- Project structure setup
+
 - System prompts (RU/EN versions)
 - Few-shot examples (RU/EN versions) 
 - Golden standard dataset (20 test cases RU/EN)
 - Prompt assembly integration tests
+- Flask API with POST /api/analyze endpoint
+- Frontend UI with real-time language switching (EN/RU)
+- YandexGPT integration with comprehensive error handling
+- Pydantic validation for robust request/response handling
+- Ethical disclaimer system with bilingual support
+- Modern CSS design with gradients and responsive layout
 
 ### 🔄 In Progress:
-- YandexGPT API integration
-- Flask API development
-- Pydantic validation models
+
+- SQLite database integration with SQLAlchemy ORM
+
+- Streamlit dashboard for specialist analytics
+
+- Telegram bot implementation
+
+- API key authentication system for specialists
 
 ## 🧪 Testing
 
@@ -62,7 +94,7 @@ YandexGPT API - ML model integration
 
 Streamlit - Analytics dashboard
 
-Docker - Containerization
+JavaScript - Frontend interactivity and API communication
 
 ## 🚀 Quick Start
 
@@ -93,42 +125,41 @@ cp .env.example .env
 # YANDEX_FOLDER_ID=your_actual_folder_id_here
 ```
 
-4. **Run tests:**
-
-To run the test suite, use the following command:
+4. **Run the application:**
 
 ```bash
-python tests/test_prompt_assembly.py
+python app.py
 ```
-Requirements: Make sure pytest is installed in your virtual environment:
 
-```bash
-pip install pytest
+5. **Open in browser:**
+
+```text
+http://localhost:5000
 ```
-5. **API Configuration**
-- To get your Yandex Cloud credentials:
 
-- Create service account in Yandex Cloud Console
-
-- Assign ai.languageModels.user role
-
-- Create API Key for the service account
-
-- Copy Folder ID from your catalog page
+## ⚠️ Important Notice
+MindAnalyser is a self-reflection aid tool. It does not provide diagnoses, is not a medical service, and is not a substitute for professional consultation with a psychologist or psychotherapist. Use only under specialist supervision.
 
 ## 📋 Next Steps
-- Implement YandexGPT API client
 
-- Create Flask API endpoints
+- Database integration (SQLite + SQLAlchemy)
 
-- Add data validation with Pydantic
+- Specialist analytics dashboard (Streamlit)
 
-- Develop Streamlit dashboard
+- Telegram bot for mobile access
 
-- Add comprehensive test suite
+- API authentication and user management
+
+- Export functionality (CSV/JSON reports)
+
+- Advanced data visualizations
+
+- Docker containerization
+
+- Deployment ready configuration
 
 
-## 👩‍💻 Автор
+## 👩‍💻 Author
 AdeleVer - Prompt Engineering Specialist
 
 GitHub: AdeleVer

@@ -3,14 +3,31 @@ Flask server for Mental Health Text Analysis API.
 """
 
 import logging
+import os
 from flask import Flask, request, jsonify, render_template
 from src.api.models import AnalysisRequest
 from src.api.yandex_gpt import get_yandex_gpt_client
+
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from dotenv import load_dotenv
+import json
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///mental_health_analysis.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+import src.models.sql_models
+from src.models.sql_models import AnalysisResult
+
+migrate = Migrate(app, db)
 
 @app.route('/')
 def home():
@@ -33,12 +50,34 @@ def analyze_text():
             text=analysis_request.text,
             language=analysis_request.language
         )
+        result_dict = analysis_result.model_dump()
+        
+        db_record = AnalysisResult(
+            original_text=analysis_request.text,
+            language=analysis_request.language,
+            sentiment=result_dict['sentiment'],
+            confidence_score=result_dict['confidence_score'],
+            emotions=json.dumps(result_dict['entities']['emotions']),
+            skills=json.dumps(result_dict['entities']['skills']),
+            distortions=json.dumps(result_dict['distortions'])
+        )
+        
+        db.session.add(db_record)
+        db.session.commit()
+        logger.info(f"Analysis result saved to DB with ID: {db_record.id}")
+
         return jsonify(analysis_result.model_dump())
         
     except Exception as e:
         logger.error(f"Error: {str(e)}")
+        db.session.rollback()
         return jsonify({"error": "Analysis failed", "details": str(e)}), 500
 
+with app.app_context():
+    db.create_all()
+    logger.info("Database tables created!")
+
 if __name__ == '__main__':
+
     logger.info("Starting server...")
     app.run(debug=True, host='0.0.0.0', port=5000)

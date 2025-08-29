@@ -31,6 +31,7 @@ h1 {
     margin-bottom: 10px;
     background: linear-gradient(135deg, #667eea, #764ba2);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -128,4 +129,21 @@ button:active {
     padding: 15px;
     border-radius: 8px;
     border-left: 4px solid #dc3545;
+}
+
+.disclaimer-box {
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+    color: #495057;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.disclaimer-box strong {
+    color: #5a67d8;
+    display: block;
+    margin-bottom: 8px;
 }

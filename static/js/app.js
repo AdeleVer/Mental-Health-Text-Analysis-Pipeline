@@ -1,27 +1,27 @@
 const translations = {
     'en': {
-        'subtitle': 'AI-powered mental health text analysis',
+        'subtitle': 'Explore your emotions and cognitive patterns',
         'textLabel': 'Share your thoughts:',
         'textPlaceholder': 'I\'ve been feeling... ✍️',
         'languageLabel': 'Language:',
         'submitButton': 'Analyze Text',
         'loading': 'Analysis in progress...',
         'sentiment': 'Sentiment:',
-        'confidence': 'Confidence:',
+        'confidence': 'AI-model Confidence Score:',
         'emotions': 'Emotions:',
         'patterns': 'Cognitive Patterns:',
         'none': 'None detected',
         'error': 'Error:'
     },
     'ru': {
-        'subtitle': 'Анализ психического здоровья с помощью ИИ',
+        'subtitle': 'Исследуйте свои эмоции и когнитивные паттерны',
         'textLabel': 'Поделитесь мыслями:',
         'textPlaceholder': 'Я чувствую... ✍️',
         'languageLabel': 'Язык:',
         'submitButton': 'Анализировать текст',
         'loading': 'Анализ выполняется...',
         'sentiment': 'Настроение:',
-        'confidence': 'Уверенность:',
+        'confidence': 'Оценка уверенности AI-модели:',
         'emotions': 'Эмоции:',
         'patterns': 'Когнитивные искажения:',
         'none': 'Не обнаружено',
@@ -37,6 +37,8 @@ function updateLanguage() {
     document.getElementById('text').placeholder = t.textPlaceholder;
     document.getElementById('languageLabel').textContent = t.languageLabel;
     document.getElementById('submitButton').textContent = t.submitButton;
+    document.getElementById('disclaimer-en').style.display = (lang === 'en') ? 'block' : 'none';
+    document.getElementById('disclaimer-ru').style.display = (lang === 'ru') ? 'block' : 'none';
 }
 
 document.getElementById('language').addEventListener('change', updateLanguage);

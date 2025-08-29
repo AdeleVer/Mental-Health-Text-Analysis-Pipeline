@@ -63,11 +63,10 @@ mental-health-text-analysis-pipeline/
 - YandexGPT integration with comprehensive error handling
 - Pydantic validation for robust request/response handling
 - Ethical disclaimer system with bilingual support
-- Modern CSS design with gradients and responsive layout
-
-### 🔄 In Progress:
-
+- Modern CSS design with gradients and responsive layout 
 - SQLite database integration with SQLAlchemy ORM
+
+### 🔄 In Progress: 
 
 - Streamlit dashboard for specialist analytics
 
@@ -140,9 +139,7 @@ http://localhost:5000
 ## ⚠️ Important Notice
 MindAnalyser is a self-reflection aid tool. It does not provide diagnoses, is not a medical service, and is not a substitute for professional consultation with a psychologist or psychotherapist. Use only under specialist supervision.
 
-## 📋 Next Steps
-
-- Database integration (SQLite + SQLAlchemy)
+## 📋 Next Steps 
 
 - Specialist analytics dashboard (Streamlit)
 

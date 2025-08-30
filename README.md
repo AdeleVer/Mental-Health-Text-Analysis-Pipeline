@@ -65,10 +65,9 @@ mental-health-text-analysis-pipeline/
 - Ethical disclaimer system with bilingual support
 - Modern CSS design with gradients and responsive layout 
 - SQLite database integration with SQLAlchemy ORM
+- Specialist analytics dashboard (Streamlit)
 
-### 🔄 In Progress: 
-
-- Streamlit dashboard for specialist analytics
+### 🔄 In Progress:  
 
 - Telegram bot implementation
 
@@ -139,9 +138,7 @@ http://localhost:5000
 ## ⚠️ Important Notice
 MindAnalyser is a self-reflection aid tool. It does not provide diagnoses, is not a medical service, and is not a substitute for professional consultation with a psychologist or psychotherapist. Use only under specialist supervision.
 
-## 📋 Next Steps 
-
-- Specialist analytics dashboard (Streamlit)
+## 📋 Next Steps  
 
 - Telegram bot for mobile access
 

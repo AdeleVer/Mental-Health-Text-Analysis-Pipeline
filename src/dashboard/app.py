@@ -55,6 +55,7 @@ TRANSLATIONS = {
         "original_text": "Original Text",
         "analysis_results": "Analysis Results",
         "emotions": "Emotions:",
+        "skills": "Skills:",
         "distortions": "Cognitive Distortions:",
         "footer": "MindAnalyzer Dashboard v1.0 | For use by qualified professionals only",
         "language": "Language:",
@@ -90,6 +91,7 @@ TRANSLATIONS = {
         "original_text": "Исходный текст",
         "analysis_results": "Результаты анализа",
         "emotions": "Эмоции:",
+        "skills": "Навыки:",
         "distortions": "Когнитивные искажения:",
         "footer": "MindAnalyzer Dashboard v1.0 | Для использования квалифицированными специалистами",
         "language": "Язык:",
@@ -184,7 +186,7 @@ except Exception as e:
 # Data loading
 try:
     query = sa.text("""
-        SELECT id, original_text, sentiment, confidence_score, emotions, distortions, created_at
+        SELECT id, original_text, sentiment, confidence_score, emotions, skills, distortions, created_at
         FROM analysis_results 
         WHERE DATE(created_at) BETWEEN :start_date AND :end_date
     """)
@@ -209,6 +211,7 @@ try:
     
     # Parse JSON columns
     df['emotions'] = df['emotions'].apply(lambda x: parse_json_column(x, get_translation('none_detected')))
+    df['skills'] = df['skills'].apply(lambda x: parse_json_column(x, get_translation('none_detected')))
     df['distortions'] = df['distortions'].apply(lambda x: parse_json_column(x, get_translation('none_detected')))
     df['created_at'] = pd.to_datetime(df['created_at'])
     
@@ -287,7 +290,7 @@ st.plotly_chart(fig_timeline, use_container_width=True)
 # Data table
 st.header(get_translation("records"))
 st.dataframe(
-    df[['created_at', 'sentiment', 'confidence_score', 'emotions', 'distortions']],
+    df[['created_at', 'sentiment', 'confidence_score', 'emotions', 'skills', 'distortions']],
     use_container_width=True,
     hide_index=True
 )
@@ -312,6 +315,7 @@ if selected_id:
     
     st.subheader(get_translation("analysis_results"))
     st.write(f"**{get_translation('emotions')}** {selected_record['emotions']}")
+    st.write(f"**{get_translation('skills')}** {selected_record['skills']}")
     st.write(f"**{get_translation('distortions')}** {selected_record['distortions']}")
 
 # Footer

@@ -12,6 +12,7 @@ const translations = {
         'sentiment': 'Sentiment:',
         'confidence': 'AI-model Confidence Score:',
         'emotions': 'Emotions:',
+        'skills': 'Skills:',
         'patterns': 'Cognitive Patterns:',
         'none': 'None detected',
         'error': 'Error:',
@@ -34,6 +35,7 @@ const translations = {
         'sentiment': 'Настроение:',
         'confidence': 'Оценка уверенности AI-модели:',
         'emotions': 'Эмоции:',
+        'skills': 'Навыки:',
         'patterns': 'Когнитивные искажения:',
         'none': 'Не обнаружено',
         'error': 'Ошибка:',
@@ -206,6 +208,7 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
             <div class="result-item"><div class="result-label">${t.sentiment}</div><div>${data.sentiment}</div></div>
             <div class="result-item"><div class="result-label">${t.confidence}</div><div>${(data.confidence_score * 100).toFixed(1)}%</div></div>
             <div class="result-item"><div class="result-label">${t.emotions}</div><div>${data.entities.emotions.join(', ') || t.none}</div></div>
+            <div class="result-item"><div class="result-label">${t.skills}</div><div>${data.entities.skills.join(', ') || t.none}</div></div>
             <div class="result-item"><div class="result-label">${t.patterns}</div><div>${data.distortions.join(', ') || t.none}</div></div>
         `;
         

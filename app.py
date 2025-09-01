@@ -4,17 +4,14 @@ Flask server for Mental Health Text Analysis API.
 
 import logging
 import os
-from flask import Flask, request, jsonify, render_template
-from src.api.models import AnalysisRequest
-from src.api.yandex_gpt import get_yandex_gpt_client
-
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask import Flask, request, jsonify, render_template 
+from flask_sqlalchemy import SQLAlchemy 
 from dotenv import load_dotenv
-import json
+import json 
 
-from dotenv import load_dotenv
-load_dotenv()
+from extensions import db 
+
+load_dotenv() 
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,11 +21,15 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///instance/mental_health_analysis.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
-import src.models.sql_models
-from src.models.sql_models import AnalysisResult
+db.init_app(app)
 
-migrate = Migrate(app, db)
+from src.models.sql_models import AnalysisResult, User
+from src.api.models import AnalysisRequest
+from src.api.yandex_gpt import get_yandex_gpt_client
+from src.auth.utils import token_required
+from src.auth.routes import auth_bp
+
+app.register_blueprint(auth_bp, url_prefix='/api/auth')
 
 @app.route('/')
 def home():
@@ -36,7 +37,8 @@ def home():
     return render_template('index.html')
 
 @app.route('/api/analyze', methods=['POST'])
-def analyze_text():
+@token_required  # ADD: Protect endpoint with JWT authentication
+def analyze_text(user_id):
     """Analyze text using YandexGPT API."""
     try:
         client = get_yandex_gpt_client()
@@ -45,7 +47,7 @@ def analyze_text():
     
         request_data = request.get_json()
         analysis_request = AnalysisRequest(**request_data)
-        logger.info(f"Analyzing text: {analysis_request.text[:50]}...")
+        logger.info(f"User {user_id} analyzing text: {analysis_request.text[:50]}...")
         
         analysis_result = client.analyze_text(
             text=analysis_request.text,
@@ -54,6 +56,7 @@ def analyze_text():
         result_dict = analysis_result.model_dump()
         
         db_record = AnalysisResult(
+            user_id=user_id,
             original_text=analysis_request.text,
             language=analysis_request.language,
             sentiment=result_dict['sentiment'],
@@ -65,7 +68,7 @@ def analyze_text():
         
         db.session.add(db_record)
         db.session.commit()
-        logger.info(f"Analysis result saved to DB with ID: {db_record.id}")
+        logger.info(f"Analysis result saved for user: {user_id}")
 
         return jsonify(analysis_result.model_dump())
         
@@ -73,12 +76,40 @@ def analyze_text():
         logger.error(f"Error: {str(e)}")
         db.session.rollback()
         return jsonify({"error": "Analysis failed", "details": str(e)}), 500
+    
+# ADD: User profile endpoint (protected)
+@app.route('/api/profile', methods=['GET'])
+@token_required
+def get_user_profile(user_id):
+    """Get current user profile information."""
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+            
+        return jsonify(user.to_dict())
+        
+    except Exception as e:
+        logger.error(f"Error fetching user profile: {str(e)}")
+        return jsonify({"error": "Failed to fetch profile", "details": str(e)}), 500
+
+# ADD: User analysis history endpoint (protected)
+@app.route('/api/analyses', methods=['GET'])
+@token_required
+def get_user_analyses(user_id):
+    """Get analysis history for current user."""
+    try:
+        analyses = AnalysisResult.query.filter_by(user_id=user_id).order_by(AnalysisResult.created_at.desc()).all()
+        return jsonify([analysis.to_dict() for analysis in analyses])
+        
+    except Exception as e:
+        logger.error(f"Error fetching user analyses: {str(e)}")
+        return jsonify({"error": "Failed to fetch analyses", "details": str(e)}), 500
 
 with app.app_context():
     db.create_all()
     logger.info("Database tables created!")
 
-if __name__ == '__main__':
-
+if __name__ == '__main__': 
     logger.info("Starting server...")
     app.run(debug=True, host='0.0.0.0', port=5000)

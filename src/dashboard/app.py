@@ -7,6 +7,25 @@ import os
 import json
 from pathlib import Path
 
+# 🔐 Basic authentication for dashboard
+DASHBOARD_PASSWORD = os.getenv('DASHBOARD_PASSWORD', 'mindanalyzer123')
+
+def check_auth():
+    if 'dashboard_authenticated' not in st.session_state:
+        st.sidebar.header("🔐 Dashboard Access")
+        password = st.sidebar.text_input("Password", type="password")
+        if st.sidebar.button("Login"):
+            if password == DASHBOARD_PASSWORD:
+                st.session_state.dashboard_authenticated = True
+                st.rerun()
+            else:
+                st.sidebar.error("Incorrect password")
+        st.stop()
+    return True
+
+# Check authentication
+check_auth()
+
 # Translation dictionary
 TRANSLATIONS = {
     "en": {
@@ -41,7 +60,8 @@ TRANSLATIONS = {
         "language": "Language:",
         "none_detected": "None detected",
         "database_error": "Database error:",
-        "no_data": "No data found for selected filters"
+        "no_data": "No data found for selected filters",
+        "user_filter": "User:"
     },
     "ru": {
         "title": "🧠 MindAnalyzer Панель Специалиста",
@@ -75,7 +95,8 @@ TRANSLATIONS = {
         "language": "Язык:",
         "none_detected": "Не обнаружено",
         "database_error": "Ошибка базы данных:",
-        "no_data": "Нет данных для выбранных фильтров"
+        "no_data": "Нет данных для выбранных фильтров",
+        "user_filter": "Пользователь:"
     }
 }
 
@@ -148,6 +169,18 @@ date_range = st.sidebar.date_input(
 sentiment_options = [get_translation('all'), 'positive', 'negative', 'neutral', 'mixed']
 selected_sentiment = st.sidebar.selectbox(get_translation("sentiment"), sentiment_options)
 
+# User selection filter
+try:
+    with engine.connect() as conn:
+        users_df = pd.read_sql("SELECT id, username FROM users", conn)
+    
+    user_options = ["All Users"] + [f"{row['id']} - {row['username']}" for _, row in users_df.iterrows()]
+    selected_user = st.sidebar.selectbox(get_translation("user_filter"), user_options)
+    
+except Exception as e:
+    st.sidebar.warning("Could not load users list")
+    selected_user = "All Users"
+
 # Data loading
 try:
     query = sa.text("""
@@ -158,6 +191,11 @@ try:
     
     params = {'start_date': date_range[0], 'end_date': date_range[1]}
     
+    if selected_user != "All Users":
+        user_id = int(selected_user.split(" - ")[0])
+        query = sa.text(str(query) + " AND user_id = :user_id")
+        params['user_id'] = user_id
+
     if selected_sentiment != get_translation('all'):
         query = sa.text(str(query) + " AND sentiment = :sentiment")
         params['sentiment'] = selected_sentiment

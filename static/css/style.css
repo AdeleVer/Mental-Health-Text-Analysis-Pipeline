@@ -147,3 +147,81 @@ button:active {
     display: block;
     margin-bottom: 8px;
 }
+
+.auth-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+}
+
+.auth-section h2 {
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.auth-buttons button {
+    flex: 1;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.auth-buttons button:hover {
+    transform: translateY(-2px);
+}
+
+.user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logout-btn {
+    background: #dc3545 !important;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.logout-btn:hover {
+    background: #c82333 !important;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+    .auth-buttons {
+        flex-direction: column;
+    }
+    
+    .user-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+}

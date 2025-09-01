@@ -8,91 +8,181 @@
 A web application for emotional state text analysis.
 The system detects emotional tone, cognitive patterns, and extracts key entities from user text. 
 
-Key Features:
+**Key Features:**
 
-🤖 AI-powered text analysis using YandexGPT
+🔐 **JWT Token Authentication** - Secure user sessions
 
-🌐 Bilingual interface (English/Russian)
+🗄️ **Encrypted Database Storage** - Fernet encryption for sensitive data
 
-🎯 Emotion and cognitive pattern detection
+🤖 **AI-powered text analysis** using YandexGPT
 
-⚠️ Ethical disclaimer and safety measures
+🌐 **Bilingual interface** (English/Russian)
 
-💾 Ready for database integration
+🎯 **Emotion and cognitive pattern detection**
+
+⚠️ **Ethical disclaimer** and safety measures
+
+📊 **Specialist dashboard** with analytics
+
+💾 **SQLite/PostgreSQL ready** database architecture
 
 ## 🏗️ Project Structure
 
 ```bash
-mental-health-text-analysis-pipeline/
-├── app.py                      # Flask server (main application)
-├── templates/
-│   └── index.html 
-├── static/
-│   ├── css/style.css 
-│   └── js/app.js           
-├── src/
-│   └── api/
-│       ├── models.py          # Pydantic request/response models
-│       └── yandex_gpt.py      # YandexGPT API client implementation
-├── prompts/                   # LLM prompts for RU/EN languages
+mental-health-text-analysis-pipeline/ 
+
+├── instance/                       # Database directory
+│   └── mental_health_analysis.db   # Database file
+├── data/                           # Test datasets
+│   ├── golden_standard_en.json
+│   └── golden_standard_ru.json
+├── prompts/                        # AI prompts directory
 │   ├── system_prompt_en.txt
 │   ├── system_prompt_ru.txt
 │   ├── few_shot_examples_en.txt
 │   └── few_shot_examples_ru.txt
-├── data/                      # Test datasets
-│   ├── golden_standard_en.json
-│   └── golden_standard_ru.json
-├── tests/                     # Test suite
-├── .env 
-├── venv/ 
-├── .gitignore
-├── LICENSE
-└── README.md
+├── src/                            # Source code
+│   ├── __init__.py                 # Python package
+│   ├── api/                        # API module
+│   │   ├── __init__.py
+│   │   ├── models.py               # Pydantic models
+│   │   └── yandex_gpt.py           # YandexGPT client
+│   │
+│   ├── auth/                       # Authentication module
+│   │   ├── __init__.py
+│   │   ├── utils.py                # JWT utilities
+│   │   └── routes.py               # Auth endpoints
+│   │
+│   ├── models/                     # Database models
+│   │   ├── __init__.py
+│   │   └── sql_models.py           # SQLAlchemy models
+│   │
+│   ├── dashboard/                  # Dashboard module
+│   │   ├── __init__.py
+│   │   └── app.py                  # Streamlit application
+│   │
+│   └── static/                     # Frontend assets
+│       ├── css/
+│       │   └── style.css
+│       └── js/
+│           └── app.js
+├── templates/                      # HTML templates
+│   └── index.html
+│
+├── tests/                          # Test suite
+│   ├── __init__.py
+│   ├── test_api.py                 # API tests
+│   ├── test_models.py              # Model tests
+│   └── test_prompt_assembly.py     # Prompt tests
+│
+├── app.py                          # Main Flask server
+│
+├── extensions.py                   # Extensions (db)
+├── debug_jwt.py                    # JWT debug utility
+├── .env                            # Environment variables
+├── .gitignore                      # Git ignore rules
+├── requirements.txt                # Dependencies
+├── LICENSE                         # License file
+├── README.md                       # English documentation
+└── README_RU.md                    # Russian documentation  
 ```
 
 ## 🚀 Current Progress
 
-### ✅ Completed:
+### ✅ Completed: 
+
+**Security & Authentication:**
+
+- JWT token-based authentication system
+
+- Password hashing with Werkzeug security
+
+- Encrypted database storage (Fernet encryption)
+
+- Protected API endpoints with token validation
+
+- Secure environment configuration
+
+**Database Architecture:**
+
+- SQLAlchemy ORM with proper initialization
+
+- User and AnalysisResult models with relationships
+
+- Automated table creation and migrations
+
+- Data encryption at rest for sensitive content
+
+**Core Functionality:**
 
 - System prompts (RU/EN versions)
-- Few-shot examples (RU/EN versions) 
+
+- Few-shot examples (RU/EN versions)
+
 - Golden standard dataset (20 test cases RU/EN)
-- Prompt assembly integration tests
-- Flask API with POST /api/analyze endpoint
-- Frontend UI with real-time language switching (EN/RU)
-- YandexGPT integration with comprehensive error handling
-- Pydantic validation for robust request/response handling
+
+- Flask API with complete REST endpoints
+
+- Frontend UI with real-time language switching
+
+- YandexGPT integration with error handling
+
+- Pydantic validation for robust data handling
+
+**Professional Features:**
+
 - Ethical disclaimer system with bilingual support
-- Modern CSS design with gradients and responsive layout 
-- SQLite database integration with SQLAlchemy ORM
+
+- Modern CSS design with responsive layout
+
 - Specialist analytics dashboard (Streamlit)
+
+- Role-based access control foundation
+
+## 🔐 Security Features Implemented
+
+- JWT Authentication - Secure token-based sessions
+
+- Password Hashing - bcrypt-based password security
+
+- Data Encryption - Fernet encryption for sensitive text
+
+- Input Validation - Pydantic request validation
+
+- Environment Variables - Secure configuration management
+
+- CORS Protection - Configured for production security
 
 ### 🔄 In Progress:  
 
-- Telegram bot implementation
-
-- API key authentication system for specialists
+- Telegram bot implementation 
 
 ## 🧪 Testing
 
 ```bash
 # Run prompt assembly tests
 python tests/test_prompt_assembly.py
+
+# Run authentication tests
+python tests/test_api.py
+
+# Run JWT functionality tests  
+python tests/test_jwt.py
 ```
 
 ## 🛠️ Tech Stack
 
-Python 3.12.10
+**Backend:** Python 3.12, Flask, SQLAlchemy, Pydantic
 
-Flask - Web framework
+**Authentication:** JWT, Werkzeug Security, Fernet Encryption
 
-Pydantic - Data validation
+**AI:** YandexGPT API, Custom prompt engineering
 
-YandexGPT API - ML model integration
+**Frontend:** JavaScript, HTML5, CSS3
 
-Streamlit - Analytics dashboard
+**Dashboard:** Streamlit, Plotly, Pandas
 
-JavaScript - Frontend interactivity and API communication
+**Database:** SQLite (PostgreSQL ready)
 
 ## 🚀 Quick Start
 
@@ -119,8 +209,11 @@ pip install -r requirements.txt
 cp .env.example .env
 
 # Edit .env file with your credentials:
+
 # YANDEX_API_KEY=your_actual_api_key_here
 # YANDEX_FOLDER_ID=your_actual_folder_id_here
+# JWT_SECRET=your-super-secret-jwt-key
+# ENCRYPTION_KEY=your-encryption-key-here
 ```
 
 4. **Run the application:**
@@ -134,7 +227,11 @@ python app.py
 ```text
 http://localhost:5000
 ```
+**Dashboard:** 
 
+```text
+streamlit run src/dashboard/app.py
+```
 ## ⚠️ Important Notice
 MindAnalyser is a self-reflection aid tool. It does not provide diagnoses, is not a medical service, and is not a substitute for professional consultation with a psychologist or psychotherapist. Use only under specialist supervision.
 

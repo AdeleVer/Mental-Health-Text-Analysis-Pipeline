@@ -1,4 +1,6 @@
 # Mental Health Text Analysis Pipeline
+  
+[🇺🇸 English](README.md) | [🇷🇺 Русский](README_RU.md)
 
 ### MindAnalyzer: AI-Powered Emotional State Analysis
 

@@ -39,10 +39,10 @@ mental-health-text-analysis-pipeline/
 │   ├── golden_standard_en.json
 │   └── golden_standard_ru.json
 ├── prompts/                        # AI prompts directory
-│   ├── system_prompt_en.txt
-│   ├── system_prompt_ru.txt
-│   ├── few_shot_examples_en.txt
-│   └── few_shot_examples_ru.txt
+│   ├── system_prompt_en.md
+│   ├── system_prompt_ru.md
+│   ├── few_shot_examples_en.md
+│   └── few_shot_examples_ru.md
 ├── src/                            # Source code
 │   ├── __init__.py                 # Python package
 │   ├── api/                        # API module

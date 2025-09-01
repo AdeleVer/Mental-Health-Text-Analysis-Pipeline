@@ -61,8 +61,8 @@ class YandexGPTClient:
         """Build complete prompt with system instructions and user text."""
         try:
             # Load appropriate prompts based on language
-            system_prompt_file = f"system_prompt_{language}.txt"
-            examples_file = f"few_shot_examples_{language}.txt"
+            system_prompt_file = f"system_prompt_{language}.md"
+            examples_file = f"few_shot_examples_{language}.md"
             
             system_prompt = self._load_prompt_file(system_prompt_file)
             few_shot_examples = self._load_prompt_file(examples_file)

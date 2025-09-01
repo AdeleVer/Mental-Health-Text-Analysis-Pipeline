@@ -31,10 +31,10 @@ def build_prompt(user_text, language="ru"):
     """Build complete prompt from system instructions and few-shot examples"""
     try:
         # Load system prompt (model instructions)
-        system_prompt = Path(f"prompts/system_prompt_{language}.txt").read_text(encoding="utf-8")
+        system_prompt = Path(f"prompts/system_prompt_{language}.md").read_text(encoding="utf-8")
         
         # Load few-shot examples (training examples)
-        few_shot_examples = Path(f"prompts/few_shot_examples_{language}.txt").read_text(encoding="utf-8")
+        few_shot_examples = Path(f"prompts/few_shot_examples_{language}.md").read_text(encoding="utf-8")
         
         # Combine all parts: instructions + examples + user input
         full_prompt = f"{system_prompt}\n\n{few_shot_examples}\n\nUSER: {user_text}\nASSISTANT:"

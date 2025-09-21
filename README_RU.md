@@ -213,6 +213,15 @@ YANDEX_FOLDER_ID=ваш_id_каталога_здесь
 JWT_SECRET=ваш-супер-секретный-jwt-ключ
 ENCRYPTION_KEY=ваш-ключ-шифрования-здесь
 ```
+
+## Настройка базы данных
+
+Приложение автоматически создаст базу данных в папке `instance/`. 
+Для кастомной настройки укажите абсолютный путь в .env (опционально):
+```bash
+DATABASE_URL=sqlite:///C:/path/to/your/project/instance/mental_health_analysis.db
+```
+
 - Запустите приложение:
 
 ```bash

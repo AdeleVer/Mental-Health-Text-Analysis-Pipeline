@@ -218,6 +218,15 @@ cp .env.example .env
 # ENCRYPTION_KEY=your-encryption-key-here
 ```
 
+## Database Setup
+
+The application will automatically create a database in the `instance/` folder.
+For custom configuration, you can specify an absolute path in .env (optional):
+```bash
+DATABASE_URL=sqlite:///C:/path/to/your/project/instance/mental_health_analysis.db
+```
+
+
 4. **Run the application:**
 
 ```bash

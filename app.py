@@ -18,7 +18,21 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///instance/mental_health_analysis.db')
+def get_database_uri():
+    env_db_uri = os.getenv('DATABASE_URL')
+    if env_db_uri:
+        return env_db_uri
+    
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    db_path = os.path.join(base_dir, 'instance', 'mental_health_analysis.db')
+    
+    instance_dir = os.path.dirname(db_path)
+    os.makedirs(instance_dir, exist_ok=True)
+    logger.info(f"Ensured instance directory exists: {instance_dir}")
+    
+    return f'sqlite:///{db_path}'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = get_database_uri()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -106,19 +120,7 @@ def get_user_analyses(user_id):
         logger.error(f"Error fetching user analyses: {str(e)}")
         return jsonify({"error": "Failed to fetch analyses", "details": str(e)}), 500
 
-if __name__ == '__main__': 
-    database_uri = app.config['SQLALCHEMY_DATABASE_URI']
-    if database_uri.startswith('sqlite:///'):
-        db_path = database_uri[10:]
-        instance_dir = os.path.dirname(db_path)
-        
-        if not os.path.isabs(instance_dir):
-            base_dir = os.path.dirname(os.path.abspath(__file__))
-            instance_dir = os.path.join(app.root_path, instance_dir)
-        
-        os.makedirs(instance_dir, exist_ok=True)
-        logger.info(f"Ensured instance directory exists: {instance_dir}")
-    
+if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         logger.info("Database tables created!")

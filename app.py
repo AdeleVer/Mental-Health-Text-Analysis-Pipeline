@@ -106,10 +106,22 @@ def get_user_analyses(user_id):
         logger.error(f"Error fetching user analyses: {str(e)}")
         return jsonify({"error": "Failed to fetch analyses", "details": str(e)}), 500
 
-with app.app_context():
-    db.create_all()
-    logger.info("Database tables created!")
-
 if __name__ == '__main__': 
+    database_uri = app.config['SQLALCHEMY_DATABASE_URI']
+    if database_uri.startswith('sqlite:///'):
+        db_path = database_uri[10:]
+        instance_dir = os.path.dirname(db_path)
+        
+        if not os.path.isabs(instance_dir):
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            instance_dir = os.path.join(app.root_path, instance_dir)
+        
+        os.makedirs(instance_dir, exist_ok=True)
+        logger.info(f"Ensured instance directory exists: {instance_dir}")
+    
+    with app.app_context():
+        db.create_all()
+        logger.info("Database tables created!")
+    
     logger.info("Starting server...")
     app.run(debug=True, host='0.0.0.0', port=5000)

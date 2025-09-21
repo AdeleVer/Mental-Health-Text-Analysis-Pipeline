@@ -224,6 +224,10 @@ cp .env.example .env
 python app.py
 ```
 
+**In the data folder you will find the test_cases.md file with ready-to-use examples for testing.**
+
+You can use these examples to test the application functionality, or provide your own text samples.
+
 5. **Open in browser:**
 
 ```text

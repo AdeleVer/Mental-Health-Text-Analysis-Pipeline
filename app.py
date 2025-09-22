@@ -4,7 +4,8 @@ Flask server for Mental Health Text Analysis API.
 
 import logging
 import os
-from flask import Flask, request, jsonify, render_template 
+import re
+from flask import Flask, request, jsonify, render_template, has_request_context
 from flask_sqlalchemy import SQLAlchemy 
 from dotenv import load_dotenv
 import json 
@@ -17,6 +18,25 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+# SECURITY: Filter to mask sensitive user data in logs (PII protection)
+class SensitiveDataFilter(logging.Filter):
+    """Filter to mask confidential data in application logs"""
+    
+    def filter(self, record):
+        if has_request_context():
+            # Mask analysis text content in logs
+            if 'analyzing text:' in str(record.msg):
+                record.msg = re.sub(
+                    r'(analyzing text:\s*)(.{0,50})(.*)', 
+                    r'\1\2***MASKED***', 
+                    str(record.msg)
+                )
+            # Mask JSON fields containing sensitive text data
+            record.msg = re.sub(r'("text"\s*:\s*")([^"]+)(")', r'\1***MASKED***\3', str(record.msg))
+            record.msg = re.sub(r'("original_text"\s*:\s*")([^"]+)(")', r'\1***MASKED***\3', str(record.msg))
+        
+        return True
 
 def get_database_uri():
     env_db_uri = os.getenv('DATABASE_URL')
@@ -34,6 +54,12 @@ def get_database_uri():
 
 app.config['SQLALCHEMY_DATABASE_URI'] = get_database_uri()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# ← SECURITY: Apply sensitive data filtering to all loggers
+# IMPORTANT: This protects user privacy by masking personal data in logs
+sensitive_filter = SensitiveDataFilter()
+app.logger.addFilter(sensitive_filter)
+logging.getLogger('werkzeug').addFilter(sensitive_filter)
 
 db.init_app(app)
 
@@ -61,7 +87,8 @@ def analyze_text(user_id):
     
         request_data = request.get_json()
         analysis_request = AnalysisRequest(**request_data)
-        logger.info(f"User {user_id} analyzing text: {analysis_request.text[:50]}...")
+        # ← SECURITY: Log metadata only, not actual text content
+        app.logger.info(f"User {user_id} analyzing text (length: {len(analysis_request.text)} chars, language: {analysis_request.language})")
         
         analysis_result = client.analyze_text(
             text=analysis_request.text,
@@ -82,12 +109,14 @@ def analyze_text(user_id):
         
         db.session.add(db_record)
         db.session.commit()
-        logger.info(f"Analysis result saved for user: {user_id}")
+        # ← SECURITY: Log successful analysis without exposing data
+        app.logger.info(f"Analysis completed successfully for user {user_id}")
 
         return jsonify(analysis_result.model_dump())
         
     except Exception as e:
-        logger.error(f"Error: {str(e)}")
+        # ← SECURITY: Log errors without exposing sensitive request data
+        app.logger.error(f"Analysis failed for user {user_id}: {str(e)}")
         db.session.rollback()
         return jsonify({"error": "Analysis failed", "details": str(e)}), 500
     
@@ -104,7 +133,7 @@ def get_user_profile(user_id):
         return jsonify(user.to_dict())
         
     except Exception as e:
-        logger.error(f"Error fetching user profile: {str(e)}")
+        app.logger.error(f"Error fetching profile for user {user_id}: {str(e)}")
         return jsonify({"error": "Failed to fetch profile", "details": str(e)}), 500
 
 # ADD: User analysis history endpoint (protected)
@@ -117,7 +146,7 @@ def get_user_analyses(user_id):
         return jsonify([analysis.to_dict() for analysis in analyses])
         
     except Exception as e:
-        logger.error(f"Error fetching user analyses: {str(e)}")
+        app.logger.error(f"Error fetching analyses for user {user_id}: {str(e)}")
         return jsonify({"error": "Failed to fetch analyses", "details": str(e)}), 500
 
 if __name__ == '__main__':

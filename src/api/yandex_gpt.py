@@ -150,7 +150,7 @@ ASSISTANT RESPONSE (JSON ONLY):
         """
         # Validate input parameters
         analysis_request = AnalysisRequest(text=text, language=language)
-        logger.info(f"Starting analysis for text: {text[:50]}... (language: {language})")
+        logger.info(f"Starting analysis for text (length: {len(text)} chars, language: {language})")
         
         try:
             # Build the complete prompt
@@ -169,13 +169,13 @@ ASSISTANT RESPONSE (JSON ONLY):
             
             # Clean response - remove markdown code blocks if present
             cleaned_response = response_text.strip().replace('```json', '').replace('```', '').strip()
-            logger.debug(f"Cleaned response: {cleaned_response[:100]}...")
+            logger.debug(f"Cleaned response received (length: {len(cleaned_response)} chars)")
             
             # Parse JSON response
             try:
                 response_data = json.loads(cleaned_response)
             except json.JSONDecodeError as e:
-                error_msg = f"Failed to parse JSON response: {str(e)}\nResponse was: {response_text}"
+                error_msg = f"Failed to parse JSON response: {str(e)}\nResponse length: {len(response_text)} chars"
                 logger.error(error_msg)
                 raise Exception(error_msg)
             

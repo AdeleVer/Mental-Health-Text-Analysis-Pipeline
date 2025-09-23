@@ -212,3 +212,7 @@ __marimo__/
 *.log
 logs/
 .vscode/
+*password*
+*secret*
+*credential*
+*test_api*

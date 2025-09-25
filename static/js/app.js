@@ -56,7 +56,10 @@ function toggleAuthForms() {
     document.getElementById('analysisSection').style.display = isLoggedIn ? 'block' : 'none';
     
     if (isLoggedIn && currentUser) {
-        document.getElementById('userGreeting').textContent = translations[document.getElementById('language').value].welcome + currentUser.username;
+        const greeting = translations[document.getElementById('language').value].welcome;
+        document.getElementById('userGreeting').textContent = greeting + currentUser.username;
+    } else {
+        document.getElementById('userGreeting').textContent = '';
     }
 }
 
@@ -202,7 +205,9 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
         });
         
         const data = await response.json();
-        if (!response.ok) throw new Error(data.details || 'Analysis failed');
+        if (!response.ok) {
+            throw new Error(data.message || data.error || 'Analysis failed');
+        }
         
         resultDiv.innerHTML = `
             <div class="result-item"><div class="result-label">${t.sentiment}</div><div>${data.sentiment}</div></div>
@@ -213,11 +218,21 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
         `;
         
     } catch (error) {
+        console.error('API Error:', error);
+
         if (error.message.includes('401') || error.message.includes('token')) {
             logout();
             alert('Session expired. Please login again.');
+            return;
         }
-        resultDiv.innerHTML = `<div class="error"><strong>${t.error}</strong> ${error.message}</div>`;
+        
+        if (error.message.includes('Text is too short') || error.message.includes('Текст слишком короткий')) {
+            resultDiv.innerHTML = `<div class="error"><strong>${t.error}</strong> ${error.message}</div>`;
+        } else if (error.message.includes('Text is too long') || error.message.includes('Текст слишком длинный')) {
+            resultDiv.innerHTML = `<div class="error"><strong>${t.error}</strong> ${error.message}</div>`;
+        } else {
+            resultDiv.innerHTML = `<div class="error"><strong>${t.error}</strong> ${error.message}</div>`; 
+        }
     } finally {
         button.textContent = t.submitButton;
         button.disabled = false;

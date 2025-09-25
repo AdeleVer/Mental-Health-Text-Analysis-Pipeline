@@ -10,6 +10,9 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import json 
 
+from pydantic import ValidationError
+import pydantic_core 
+
 from extensions import db 
 
 load_dotenv() 
@@ -18,6 +21,70 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+# User-friendly error messages for both languages
+ERROR_MESSAGES = {
+    'ru': {
+        'text_too_short': 'Текст слишком короткий. Минимальная длина - 10 символов.',
+        'text_too_long': 'Текст слишком длинный. Максимальная длина - 2000 символов.',
+        'validation_error': 'Ошибка проверки данных'
+    },
+    'en': {
+        'text_too_short': 'Text is too short. Minimum length is 10 characters.',
+        'text_too_long': 'Text is too long. Maximum length is 2000 characters.',
+        'validation_error': 'Data validation error'
+    }
+}
+
+@app.errorhandler(ValidationError)
+def handle_validation_error(e):
+    return _handle_validation_error_internal(e)
+
+@app.errorhandler(pydantic_core._pydantic_core.ValidationError)
+def handle_pydantic_core_validation_error(e):
+    return _handle_validation_error_internal(e)
+
+def _handle_validation_error_internal(e):
+    """Common logic for handling ValidationError"""
+    # Detect user language from request
+    language = 'ru'  # Default to Russian
+    if request.data:
+        try:
+            data = request.get_json()
+            language = data.get('language', 'ru')
+        except:
+            pass
+    
+    # Convert Pydantic errors to friendly messages
+    error_messages = []
+    
+    # Handle different Pydantic v1/v2 error formats
+    if hasattr(e, 'errors'):
+        errors = e.errors()
+    else:
+        errors = [{'msg': str(e)}]
+    
+    for error in errors:
+        error_msg = str(error.get('msg', '')).lower()
+        
+        if 'too short' in error_msg or 'text_too_short' in error_msg:
+            error_code = 'text_too_short'
+        elif 'too long' in error_msg or 'text_too_long' in error_msg:
+            error_code = 'text_too_long'
+        else:
+            error_code = 'validation_error'
+        
+        friendly_message = ERROR_MESSAGES[language].get(
+            error_code, 
+            ERROR_MESSAGES[language]['validation_error']
+        )
+        error_messages.append(friendly_message)
+    
+    return jsonify({
+        'error': 'Validation failed',
+        'message': ' | '.join(error_messages),
+        'language': language
+    }), 400
 
 # SECURITY: Filter to mask sensitive user data in logs (PII protection)
 class SensitiveDataFilter(logging.Filter):
@@ -61,7 +128,7 @@ sensitive_filter = SensitiveDataFilter()
 app.logger.addFilter(sensitive_filter)
 logging.getLogger('werkzeug').addFilter(sensitive_filter)
 
-db.init_app(app)
+db.init_app(app) 
 
 from src.models.sql_models import AnalysisResult, User
 from src.api.models import AnalysisRequest
@@ -86,6 +153,8 @@ def analyze_text(user_id):
             return jsonify({"error": "YandexGPT client not configured"}), 500
     
         request_data = request.get_json()
+        app.logger.info(f"Received request data: {request_data}")
+
         analysis_request = AnalysisRequest(**request_data)
         # ← SECURITY: Log metadata only, not actual text content
         app.logger.info(f"User {user_id} analyzing text (length: {len(analysis_request.text)} chars, language: {analysis_request.language})")
@@ -114,11 +183,41 @@ def analyze_text(user_id):
 
         return jsonify(analysis_result.model_dump())
         
+    except ValidationError as e:
+        app.logger.info(f"Validation error for user {user_id}: {str(e)}")
+        app.logger.error(f"VALIDATION ERROR DETAILS:")
+        app.logger.error(f"Error type: {type(e)}")
+        app.logger.error(f"Error message: {str(e)}")
+        app.logger.error(f"Error repr: {repr(e)}")
+        
+        language = 'ru'
+        if request.data:
+            try:
+                data = request.get_json()
+                language = data.get('language', 'ru')
+            except:
+                pass
+
+        error_msg = str(e).lower()
+        
+        if 'too short' in error_msg:
+            user_message = ERROR_MESSAGES[language]['text_too_short']
+        elif 'too long' in error_msg:
+            user_message = ERROR_MESSAGES[language]['text_too_long']
+        else:
+            user_message = ERROR_MESSAGES[language]['validation_error']
+        
+        return jsonify({
+            'error': 'Validation failed',
+            'message': user_message,
+            'language': language
+        }), 400
+
     except Exception as e:
         # ← SECURITY: Log errors without exposing sensitive request data
         app.logger.error(f"Analysis failed for user {user_id}: {str(e)}")
         db.session.rollback()
-        return jsonify({"error": "Analysis failed", "details": str(e)}), 500
+        return jsonify({"error": "Analysis failed", "details": "Internal server error"}), 500
     
 # ADD: User profile endpoint (protected)
 @app.route('/api/profile', methods=['GET'])

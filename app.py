@@ -153,7 +153,7 @@ def analyze_text(user_id):
             return jsonify({"error": "YandexGPT client not configured"}), 500
     
         request_data = request.get_json()
-        app.logger.info(f"Received request data: {request_data}")
+        app.logger.info(f"Received analysis request (text length: {len(request_data.get('text', ''))} chars, language: {request_data.get('language', 'ru')})")
 
         analysis_request = AnalysisRequest(**request_data)
         # ← SECURITY: Log metadata only, not actual text content
@@ -184,11 +184,7 @@ def analyze_text(user_id):
         return jsonify(analysis_result.model_dump())
         
     except ValidationError as e:
-        app.logger.info(f"Validation error for user {user_id}: {str(e)}")
-        app.logger.error(f"VALIDATION ERROR DETAILS:")
-        app.logger.error(f"Error type: {type(e)}")
-        app.logger.error(f"Error message: {str(e)}")
-        app.logger.error(f"Error repr: {repr(e)}")
+        app.logger.info(f"Validation failed for user {user_id} (text length issue)")
         
         language = 'ru'
         if request.data:

@@ -12,16 +12,48 @@ DASHBOARD_PASSWORD = os.getenv('DASHBOARD_PASSWORD', 'mindanalyzer123')
 
 def check_auth():
     if 'dashboard_authenticated' not in st.session_state:
-        st.sidebar.header("🔐 Dashboard Access")
-        password = st.sidebar.text_input("Password", type="password")
-        if st.sidebar.button("Login"):
+
+        auth_lang = st.session_state.get('language', 'ru')
+
+        auth_translations = {
+            'en': {
+                'header': "🔐 Dashboard Access",
+                'password_label': "Password",
+                'login_button': "Login", 
+                'error': "Incorrect password",
+                'language': "Language:"
+            },
+            'ru': {
+                'header': "🔐 Доступ к панели",
+                'password_label': "Пароль",
+                'login_button': "Войти",
+                'error': "Неверный пароль",
+                'language': "Язык:"
+            }
+        }
+        
+        st.sidebar.header(auth_translations[auth_lang]['language'])
+        auth_language = st.sidebar.radio(
+            "Auth Language", 
+            ["Русский", "English"],
+            index=0 if auth_lang == 'ru' else 1,
+            label_visibility="collapsed"
+        )
+        
+        new_lang = 'ru' if auth_language == "Русский" else 'en'
+        st.session_state.language = new_lang
+        auth_lang = new_lang  
+
+        st.sidebar.header(auth_translations[auth_lang]['header'])
+        password = st.sidebar.text_input(auth_translations[auth_lang]['password_label'], type="password")
+        if st.sidebar.button(auth_translations[auth_lang]['login_button']):
             if password == DASHBOARD_PASSWORD:
                 st.session_state.dashboard_authenticated = True
                 st.rerun()
             else:
-                st.sidebar.error("Incorrect password")
+                st.sidebar.error(auth_translations[auth_lang]['error'])
         st.stop()
-    return True
+    return True 
 
 # Check authentication
 check_auth()
@@ -104,7 +136,7 @@ TRANSLATIONS = {
 
 # Initialize session state for language
 if 'language' not in st.session_state:
-    st.session_state.language = 'en'
+    st.session_state.language = 'ru'
 
 def get_translation(key):
     """Get translation for current language"""
@@ -143,10 +175,10 @@ st.set_page_config(
 # Language selector in sidebar
 st.sidebar.header(get_translation("language"))
 language = st.sidebar.radio(
-    "Language", ["English", "Русский"], 
-    index=0 if st.session_state.language == 'en' else 1, 
-    label_visibility="collapsed")
-st.session_state.language = 'en' if language == "English" else 'ru'
+    "Language", ["Русский", "English"],
+    index=0 if st.session_state.language == 'ru' else 1,
+    label_visibility="collapsed") 
+st.session_state.language = 'ru' if language == "Русский" else 'en'
 
 # Database connection
 @st.cache_resource
@@ -180,7 +212,8 @@ try:
     selected_user = st.sidebar.selectbox(get_translation("user_filter"), user_options)
     
 except Exception as e:
-    st.sidebar.warning("Could not load users list")
+    warning_msg = "Не удалось загрузить список пользователей" if st.session_state.language == 'ru' else "Could not load users list"
+    st.sidebar.warning(warning_msg)
     selected_user = "All Users"
 
 # Data loading
@@ -320,4 +353,4 @@ if selected_id:
 
 # Footer
 st.markdown("---")
-st.caption(get_translation("footer"))
+st.caption(get_translation("footer")) 

@@ -76,10 +76,11 @@ function toggleAuthForms() {
 
 async function register(username, email, password) {
     try {
+        const language = document.getElementById('authLanguage').value;
         const response = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
+            body: JSON.stringify({ username, email, password, language })
         });
         const data = await response.json();
         if (response.ok) {
@@ -99,10 +100,11 @@ async function register(username, email, password) {
 
 async function login(username, password) {
     try {
+        const language = document.getElementById('authLanguage').value;
         const response = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password, language })
         });
         const data = await response.json();
         if (response.ok) {

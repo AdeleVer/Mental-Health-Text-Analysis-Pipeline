@@ -6,7 +6,7 @@ const translations = {
         'subtitle': 'Explore your emotions and cognitive patterns',
         'textLabel': 'Share your thoughts:',
         'textPlaceholder': 'I\'ve been feeling... ✍️',
-        'languageLabel': 'Language:',
+        'authLanguageLabel': 'Language:',
         'submitButton': 'Analyze Text',
         'loading': 'Analysis in progress...',
         'sentiment': 'Sentiment:',
@@ -29,7 +29,7 @@ const translations = {
         'subtitle': 'Исследуйте свои эмоции и когнитивные паттерны',
         'textLabel': 'Поделитесь мыслями:',
         'textPlaceholder': 'Я чувствую... ✍️',
-        'languageLabel': 'Язык:',
+        'authLanguageLabel': 'Язык:',
         'submitButton': 'Анализировать текст',
         'loading': 'Анализ выполняется...',
         'sentiment': 'Настроение:',
@@ -50,10 +50,21 @@ const translations = {
     }
 };
 
+function initializeLanguage() {
+    document.getElementById('language').value = 'ru';
+    document.getElementById('authLanguage').value = 'ru';
+    updateLanguage();
+}
+
 function toggleAuthForms() {
     const isLoggedIn = authToken !== null;
     document.getElementById('authSection').style.display = isLoggedIn ? 'none' : 'block';
     document.getElementById('analysisSection').style.display = isLoggedIn ? 'block' : 'none';
+
+    if (!isLoggedIn) {
+        const mainLang = document.getElementById('language').value;
+        document.getElementById('authLanguage').value = mainLang;
+    }
     
     if (isLoggedIn && currentUser) {
         const greeting = translations[document.getElementById('language').value].welcome;
@@ -122,7 +133,9 @@ function handleRegister() {
     const password = document.getElementById('authPassword').value;
     
     if (!username || !email || !password) {
-        alert('Please fill all fields');
+        const lang = document.getElementById('authLanguage').value;
+        const message = lang === 'ru' ? 'Пожалуйста, заполните все поля' : 'Please fill all fields';
+        alert(message);
         return;
     }
     
@@ -135,7 +148,9 @@ function handleLogin() {
     const password = document.getElementById('authPassword').value;
     
     if (!username || !password) {
-        alert('Please fill username and password');
+        const lang = document.getElementById('authLanguage').value;
+        const message = lang === 'ru' ? 'Пожалуйста, заполните имя пользователя и пароль' : 'Please fill username and password';
+        alert(message);
         return;
     }
     
@@ -158,6 +173,7 @@ function updateLanguage() {
     document.getElementById('disclaimer-en').style.display = (lang === 'en') ? 'block' : 'none';
     document.getElementById('disclaimer-ru').style.display = (lang === 'ru') ? 'block' : 'none';
     document.getElementById('authTitle').textContent = t.loginTitle;
+    document.getElementById('authLanguageLabel').textContent = t.authLanguageLabel;
     document.getElementById('authUsername').placeholder = t.usernamePlaceholder;
     document.getElementById('authEmail').placeholder = t.emailPlaceholder;
     document.getElementById('authPassword').placeholder = t.passwordPlaceholder;
@@ -170,13 +186,23 @@ function updateLanguage() {
     }
 }
 
-document.getElementById('language').addEventListener('change', updateLanguage);
-updateLanguage();
+document.getElementById('authLanguage').addEventListener('change', function() {
+    document.getElementById('language').value = this.value;
+    updateLanguage();
+});
+
+document.getElementById('language').addEventListener('change', function() {
+    document.getElementById('authLanguage').value = this.value;
+    updateLanguage();
+});
 
 document.getElementById('analysisForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+
     if (!authToken) {
-        alert('Please login first');
+        const lang = document.getElementById('language').value;
+        const message = lang === 'ru' ? 'Пожалуйста, войдите в систему' : 'Please login first';
+        alert(message);
         return;
     }
 
@@ -222,7 +248,9 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
 
         if (error.message.includes('401') || error.message.includes('token')) {
             logout();
-            alert('Session expired. Please login again.');
+            const lang = document.getElementById('language').value;
+            const message = lang === 'ru' ? 'Сессия истекла. Пожалуйста, войдите снова.' : 'Session expired. Please login again.';
+            alert(message);
             return;
         }
         
@@ -240,5 +268,12 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    initializeLanguage();
     toggleAuthForms();
 });
+
+function initializeLanguage() {
+    document.getElementById('language').value = 'ru';
+    document.getElementById('authLanguage').value = 'ru';
+    updateLanguage();
+}

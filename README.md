@@ -1,276 +1,271 @@
 # Mental Health Text Analysis Pipeline
-  
-[🇺🇸 English](README.md) | [🇷🇺 Русский](README_RU.md)
 
-### MindAnalyzer: AI-Powered Emotional State Analysis
+[🇷🇺 Русский](README.md) | [🇺🇸 English](README_EN.md)
 
-## Status: ✅ Operational | Basic functionality complete | Active development
+### MindAnalyzer: Анализ эмоционального состояния с помощью ИИ
 
-## 📖 About The Project
-A web application for emotional state text analysis.
-The system detects emotional tone, cognitive patterns, and extracts key entities from user text. 
+## Статус: ✅ Работает | Аутентификация и безопасность реализованы | Готово к продакшену
 
-**Key Features:**
+## 📖 О проекте
 
-🔐 **JWT Token Authentication** - Secure user sessions
+Безопасное веб-приложение для анализа эмоционального состояния по тексту с профессиональными функциями безопасности. Система определяет эмоциональный тон, когнитивные паттерны и извлекает ключевые сущности из текста с полной защитой данных.
 
-🗄️ **Encrypted Database Storage** - Fernet encryption for sensitive data
+## Ключевые возможности:
 
-🤖 **AI-powered text analysis** using YandexGPT
+🌐 Автоопределение языка - Умное определение языка браузера пользователя
 
-🌐 **Bilingual interface** (English/Russian)
+🔐 JWT аутентификация - Безопасные пользовательские сессии
 
-🎯 **Emotion and cognitive pattern detection**
+🗄️ Шифрование базы данных - Fernet шифрование для чувствительных данных
 
-⚠️ **Ethical disclaimer** and safety measures
+🤖 AI-анализ текста с помощью YandexGPT
 
-📊 **Specialist dashboard** with analytics
+🌐 Двуязычный интерфейс (Английский/Русский)
 
-💾 **SQLite/PostgreSQL ready** database architecture
+🎯 Определение эмоций и когнитивных паттернов
 
-## 🏗️ Project Structure
+⚠️ Этическое предупреждение и меры безопасности
+
+📊 Дашборд для специалистов с аналитикой
+
+💾 Архитектура БД готовая для SQLite/PostgreSQL
+
+## 🏗️ Структура проекта
 
 ```bash
-mental-health-text-analysis-pipeline/ 
+mental-health-text-analysis-pipeline/
 
-├── instance/                       # Database directory
-│   └── mental_health_analysis.db   # Database file
-├── data/                           # Test datasets
+├── instance/                       # Папка для БД
+│   └── mental_health_analysis.db   # Файл базы данных
+├── data/                           # Тестовые данные
 │   ├── golden_standard_en.json
 │   └── golden_standard_ru.json
-├── prompts/                        # AI prompts directory
+├── prompts/                        # Промпты для AI
 │   ├── system_prompt_en.md
 │   ├── system_prompt_ru.md
 │   ├── few_shot_examples_en.md
 │   └── few_shot_examples_ru.md
-├── src/                            # Source code
-│   ├── __init__.py                 # Python package
-│   ├── api/                        # API module
+├── src/                            # Исходный код
+│   ├── __init__.py                 
+│   ├── api/                        # API модуль
 │   │   ├── __init__.py
-│   │   ├── models.py               # Pydantic models
-│   │   └── yandex_gpt.py           # YandexGPT client
+│   │   ├── models.py               # Pydantic модели
+│   │   └── yandex_gpt.py           # YandexGPT клиент
 │   │
-│   ├── auth/                       # Authentication module
+│   ├── auth/                       # Аутентификация
 │   │   ├── __init__.py
-│   │   ├── utils.py                # JWT utilities
+│   │   ├── utils.py                # JWT утилиты
 │   │   └── routes.py               # Auth endpoints
 │   │
-│   ├── models/                     # Database models
+│   ├── models/                     # Модели БД
 │   │   ├── __init__.py
-│   │   └── sql_models.py           # SQLAlchemy models
+│   │   └── sql_models.py           # SQLAlchemy модели
 │   │
-│   ├── dashboard/                  # Dashboard module
+│   ├── dashboard/                  # Дашборд
 │   │   ├── __init__.py
-│   │   └── app.py                  # Streamlit application
+│   │   └── app.py                  # Streamlit приложение
 │   │
-│   └── static/                     # Frontend assets
+│   └── static/                     # Frontend
 │       ├── css/
 │       │   └── style.css
 │       └── js/
 │           └── app.js
-├── templates/                      # HTML templates
+├── templates/                      # HTML шаблоны
 │   └── index.html
 │
-├── tests/                          # Test suite
+├── tests/                          # Тесты
 │   ├── __init__.py
-│   ├── test_api.py                 # API tests
-│   ├── test_models.py              # Model tests
-│   └── test_prompt_assembly.py     # Prompt tests
+│   ├── test_api.py                 # Тесты API
+│   ├── test_models.py              # Тесты моделей
+│   └── test_prompt_assembly.py     # Тесты промптов 
 │
-├── app.py                          # Main Flask server
+├── app.py                          # Главный Flask сервер
 │
-├── extensions.py                   # Extensions (db)
-├── debug_jwt.py                    # JWT debug utility
-├── .env                            # Environment variables
-├── .gitignore                      # Git ignore rules
-├── requirements.txt                # Dependencies
-├── LICENSE                         # License file
-├── README.md                       # English documentation
-└── README_RU.md                    # Russian documentation  
+├── extensions.py                   # Расширения (db)
+├── debug_jwt.py                    # Тест JWT
+├── .env                            # Переменные окружения
+├── .gitignore                      
+├── requirements.txt                # Зависимости
+├── LICENSE                         # Лицензия
+├── README.md                       # Документация EN
+├── README_RU.md                    # Документация RU        
 ```
+## 🚀 Текущий прогресс
 
-## 🚀 Current Progress
+### ✅ Завершено и работает: 
 
-### ✅ Completed: 
+**Безопасность и аутентификация:**
 
-**Security & Authentication:**
+- JWT аутентификация с токенами
 
-- JWT token-based authentication system
+- Хеширование паролей с Werkzeug security
 
-- Password hashing with Werkzeug security
+- Шифрование данных в базе (Fernet encryption)
 
-- Encrypted database storage (Fernet encryption)
+- Защищенные API endpoints с валидацией токенов
 
-- Protected API endpoints with token validation
+- Безопасная конфигурация переменных окружения
 
-- Secure environment configuration
+**Архитектура базы данных:**
 
-**Database Architecture:**
+- SQLAlchemy ORM с правильной инициализацией
 
-- SQLAlchemy ORM with proper initialization
+- Модели User и AnalysisResult со связями
 
-- User and AnalysisResult models with relationships
+- Автоматическое создание таблиц и миграции
 
-- Automated table creation and migrations
+- Шифрование данных для чувствительного контента
 
-- Data encryption at rest for sensitive content
+**Основная функциональность:**
 
-**Core Functionality:**
+- Системные промпты (RU/EN версии)
 
-- System prompts (RU/EN versions)
+- Few-shot примеры (RU/EN версии)
 
-- Few-shot examples (RU/EN versions)
+- Golden standard датасет (20 тестовых случаев)
 
-- Golden standard dataset (20 test cases RU/EN)
+- Flask API с полными REST endpoints
 
-- Flask API with complete REST endpoints
+- Фронтенд с переключением языков в реальном времени
 
-- Frontend UI with real-time language switching
+- Интеграция с YandexGPT с обработкой ошибок
 
-- YandexGPT integration with error handling
+- Валидация Pydantic для надежной обработки данных
 
-- Pydantic validation for robust data handling
+## Профессиональные функции:
 
-**Professional Features:**
+- Система этических предупреждений с поддержкой двух языков
 
-- Ethical disclaimer system with bilingual support
+- Современный CSS дизайн с адаптивностью
 
-- Modern CSS design with responsive layout
+- Аналитический дашборд для специалистов (Streamlit)
 
-- Specialist analytics dashboard (Streamlit)
+- Основа для контроля доступа по ролям
 
-- Role-based access control foundation
+## 🔐 Реализованные функции безопасности
 
-## 🔐 Security Features Implemented
+- JWT аутентификация - Безопасные сессии на токенах
 
-- JWT Authentication - Secure token-based sessions
+- Хеширование паролей - bcrypt-безопасность паролей
 
-- Password Hashing - bcrypt-based password security
+- Шифрование данных - Fernet шифрование для текста
 
-- Data Encryption - Fernet encryption for sensitive text
+- Валидация входных данных - Pydantic валидация запросов
 
-- Input Validation - Pydantic request validation
+- Переменные окружения - Безопасное управление конфигурацией
 
-- Environment Variables - Secure configuration management
+- CORS защита - Настроено для безопасности продакшена
 
-- CORS Protection - Configured for production security
+### 🔄 В процессе разработки:  
 
-### 🔄 In Progress:  
+- Telegram бот для мобильного доступа 
 
-- Telegram bot implementation 
-
-## 🧪 Testing
-
+## 🧪 Тестирование
 ```bash
-# Run prompt assembly tests
+# Запуск тестов промптов
 python tests/test_prompt_assembly.py
 
-# Run authentication tests
+# Запуск тестов аутентификации
 python tests/test_api.py
 
-# Run JWT functionality tests  
+# Запуск тестов JWT функциональности
 python tests/test_jwt.py
 ```
 
-## 🛠️ Tech Stack
+## 🛠️ Технологический стек
 
-**Backend:** Python 3.12, Flask, SQLAlchemy, Pydantic
+**Бэкенд:** Python 3.12, Flask, SQLAlchemy, Pydantic
 
-**Authentication:** JWT, Werkzeug Security, Fernet Encryption
+**Аутентификация:** JWT, Werkzeug Security, Fernet Encryption
 
-**AI:** YandexGPT API, Custom prompt engineering
+**AI:** YandexGPT API, Кастомный prompt engineering
 
-**Frontend:** JavaScript, HTML5, CSS3
+**Фронтенд:** JavaScript, HTML5, CSS3
 
-**Dashboard:** Streamlit, Plotly, Pandas
+**Дашборд:** Streamlit, Plotly, Pandas
 
-**Database:** SQLite (PostgreSQL ready)
+**База данных:** SQLite (готово для PostgreSQL)
 
-## 🚀 Quick Start
+## 🚀 Быстрый старт
 
-### Prerequisites
-- **Yandex Cloud account** with access to YandexGPT API
-- **API Key** and **Folder ID** from Yandex Cloud Console
-- **Python 3.10+**
+### Предварительные требования
 
-### Installation & Setup
-1. **Clone repository:**
+Python 3.10+
+
+Аккаунт Yandex Cloud с доступом к YandexGPT API
+
+API Ключ и ID Каталога из Yandex Cloud Console
+
+## Установка и настройка
+
+- Клонируйте и установите зависимости:
+
 ```bash
 git clone https://github.com/AdeleVer/mental-health-text-analysis.git
 cd mental-health-text-analysis
-```
-2. **Install dependencies:**
-
-```bash
 pip install -r requirements.txt
 ```
-
-3. **Configure environment:**
+- Настройте переменные окружения:
 
 ```bash
 cp .env.example .env
-
-# Edit .env file with your credentials:
-
-# YANDEX_API_KEY=your_actual_api_key_here
-# YANDEX_FOLDER_ID=your_actual_folder_id_here
-# JWT_SECRET=your-super-secret-jwt-key
-# ENCRYPTION_KEY=your-encryption-key-here
+# Отредактируйте .env с вашими данными:
+YANDEX_API_KEY=ваш_api_ключ_здесь
+YANDEX_FOLDER_ID=ваш_id_каталога_здесь
+JWT_SECRET=ваш-супер-секретный-jwt-ключ
+ENCRYPTION_KEY=ваш-ключ-шифрования-здесь
 ```
 
-## Database Setup
+## Настройка базы данных
 
-The application will automatically create a database in the `instance/` folder.
-For custom configuration, you can specify an absolute path in .env (optional):
+Приложение автоматически создаст базу данных в папке `instance/`. 
+Для кастомной настройки укажите абсолютный путь в .env (опционально):
 ```bash
 DATABASE_URL=sqlite:///C:/path/to/your/project/instance/mental_health_analysis.db
 ```
 
-
-4. **Run the application:**
+- Запустите приложение:
 
 ```bash
 python app.py
 ```
 
-**In the data folder you will find the test_cases.md file with ready-to-use examples for testing.**
+**В папке data вы найдете файл test_case.md с готовыми примерами для заполнения.**
+С его помощью вы можете протестировать работу приложения, либо использовать свои примеры.
 
-You can use these examples to test the application functionality, or provide your own text samples.
+- Доступ к приложениям:
 
-5. **Open in browser:**
-
+Основное приложение: 
 ```text
 http://localhost:5000
 ```
-**Dashboard:** 
-
-```text
+Дашборд: 
+```bash
 streamlit run src/dashboard/app.py
 ```
-## ⚠️ Important Notice
-MindAnalyser is a self-reflection aid tool. It does not provide diagnoses, is not a medical service, and is not a substitute for professional consultation with a psychologist or psychotherapist. Use only under specialist supervision.
-
-## 📋 Next Steps  
-
-- Telegram bot for mobile access
-
-- API authentication and user management
-
-- Export functionality (CSV/JSON reports)
-
-- Advanced data visualizations
-
-- Docker containerization
-
-- Deployment ready configuration
 
 
-## 👩‍💻 Author
-AdeleVer - Prompt Engineering Specialist
+
+## ⚠️ Важное примечание
+MindAnalyser — это инструмент для самопознания. Он не ставит диагнозы, не является медицинским сервисом и не заменяет консультацию психолога или психотерапевта. Использование допускается только под надзором специалиста.
+
+## 📋 Следующие функции в разработке:  
+
+- Telegram бот для мобильного доступа 
+
+- Экспорт данных (CSV/JSON отчеты)
+
+- Расширенные визуализации данных
+
+- Докеризация приложения
+
+- Конфигурация для деплоя
+
+## 👩‍💻 Автор
+
+AdeleVer - Специалист по Prompt Engineering/ML
 
 GitHub: AdeleVer
 
-Project: Mental Health Text Analysis Pipeline
-
-## 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+📄 Лицензия
+MIT License - подробности в файле LICENSE.

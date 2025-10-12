@@ -10,23 +10,24 @@
     <div class="container">
         <header>
             <h1>MindAnalyzer</h1>
-            <p class="subtitle" id="subtitle">Explore your emotions and cognitive patterns</p>
+            <p class="subtitle" id="subtitle" data-translate="subtitle">Explore your emotions and cognitive patterns</p>
         </header>
 
         <div class="disclaimer-box" id="disclaimer-en">
-            <p><strong>Please Note</strong></p>
-            <p>MindAnalyser is a self-reflection aid tool. It does not provide diagnoses, is not a medical service, and is not a substitute for consultation with a psychologist or psychotherapist.</p>
+            <p><strong data-translate="disclaimerTitle">Please Note</strong></p>
+            <p data-translate="disclaimerText">MindAnalyser is a self-reflection aid tool. It does not provide diagnoses, is not a medical service, and is not a substitute for consultation with a psychologist or psychotherapist.</p>
         </div>
+        
         <div class="disclaimer-box" id="disclaimer-ru" style="display: none;">
-            <p><strong>Обратите внимание</strong></p>
-            <p>MindAnalyser — это вспомогательный инструмент для самопознания. Он не ставит диагнозы, не является медицинским сервисом и не заменяет консультацию психолога или психотерапевта.</p>
+            <p><strong data-translate="disclaimerTitle">Обратите внимание</strong></p>
+            <p data-translate="disclaimerText">MindAnalyser — это вспомогательный инструмент для самопознания. Он не ставит диагнозы, не является медицинским сервисом и не заменяет консультацию психолога или психотерапевта.</p>
         </div>
 
         <div id="authSection" class="auth-section">
-            <h2 id="authTitle">Login / Register</h2>
+            <h2 id="authTitle" data-translate="loginTitle">Login / Register</h2>
 
             <div class="form-group">
-                <label for="authLanguage" id="authLanguageLabel">Язык:</label>
+                <label for="authLanguage" id="authLanguageLabel" data-translate="authLanguageLabel">Язык:</label>
                 <select id="authLanguage" name="authLanguage">
                     <option value="ru" selected>Русский</option>
                     <option value="en">English</option>
@@ -34,44 +35,44 @@
             </div>
             
             <div class="form-group">
-                <input type="text" id="authUsername" placeholder="Username" class="auth-input">
+                <input type="text" id="authUsername" placeholder="Username" class="auth-input" data-translate-placeholder="usernamePlaceholder">
             </div>
             
             <div class="form-group">
-                <input type="email" id="authEmail" placeholder="Email (for registration)" class="auth-input">
+                <input type="email" id="authEmail" placeholder="Email (for registration)" class="auth-input" data-translate-placeholder="emailPlaceholder">
             </div>
             
             <div class="form-group">
-                <input type="password" id="authPassword" placeholder="Password" class="auth-input">
+                <input type="password" id="authPassword" placeholder="Password" class="auth-input" data-translate-placeholder="passwordPlaceholder">
             </div>
             
             <div class="auth-buttons">
-                <button onclick="handleLogin()" id="loginButton">Login</button>
-                <button onclick="handleRegister()" id="registerButton">Register</button>
+                <button onclick="handleLogin()" id="loginButton" data-translate="loginButton">Login</button>
+                <button onclick="handleRegister()" id="registerButton" data-translate="registerButton">Register</button>
             </div>
         </div>
 
         <div id="analysisSection" style="display: none;">
             <div class="user-header">
                 <h2><span id="userGreeting"></span></h2>
-                <button onclick="handleLogout()" id="logoutButton" class="logout-btn">Logout</button>
+                <button onclick="handleLogout()" id="logoutButton" class="logout-btn" data-translate="logoutButton">Logout</button>
             </div>    
 
             <form id="analysisForm">
                 <div class="form-group">
-                    <label for="text" id="textLabel">Share your thoughts:</label>
-                    <textarea id="text" name="text" placeholder="I've been feeling... ✍️" required></textarea>
+                    <label for="text" id="textLabel" data-translate="textLabel">Share your thoughts:</label>
+                    <textarea id="text" name="text" placeholder="I've been feeling... ✍️" required data-translate-placeholder="textPlaceholder"></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="language" id="languageLabel">Language:</label>
+                    <label for="language" id="languageLabel" data-translate="languageLabel">Language:</label>
                     <select id="language" name="language">
                         <option value="ru" selected>Русский</option>
                         <option value="en">English</option>
                     </select>
                 </div>
 
-                <button type="submit" id="submitButton">Analyze Text</button>
+                <button type="submit" id="submitButton" data-translate="submitButton">Analyze Text</button>
             </form>
 
             <div id="result"></div>

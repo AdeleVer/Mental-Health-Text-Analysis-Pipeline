@@ -23,7 +23,13 @@ const translations = {
         'loginButton': 'Login',
         'registerButton': 'Register',
         'logoutButton': 'Logout',
-        'welcome': 'Welcome, '
+        'welcome': 'Welcome, ',
+        'authLoading': 'Processing...',
+        'networkError': 'Network error. Please check your connection.',
+        'sessionExpired': 'Session expired. Please login again.',
+        'fillAllFields': 'Please fill all fields',
+        'fillUsernamePassword': 'Please fill username and password',
+        'validEmail': 'Please enter a valid email'
     },
     'ru': {
         'subtitle': 'Исследуйте свои эмоции и когнитивные паттерны',
@@ -46,14 +52,159 @@ const translations = {
         'loginButton': 'Войти',
         'registerButton': 'Зарегистрироваться',
         'logoutButton': 'Выйти',
-        'welcome': 'Добро пожаловать, '
+        'welcome': 'Добро пожаловать, ',
+        'authLoading': 'Обработка...',
+        'networkError': 'Проблемы с соединением. Проверьте интернет.',
+        'sessionExpired': 'Сессия истекла. Пожалуйста, войдите снова.',
+        'fillAllFields': 'Пожалуйста, заполните все поля',
+        'fillUsernamePassword': 'Пожалуйста, заполните имя пользователя и пароль',
+        'validEmail': 'Пожалуйста, введите корректный email'
     }
 };
 
+class LanguageManager {
+    constructor() {
+        this.supportedLanguages = ['ru', 'en'];
+        this.defaultLanguage = 'ru';
+    }
+
+    detectBrowserLanguage() {
+        const savedLang = this.getSavedLanguage();
+        if (savedLang) return savedLang;
+
+        const browserLanguages = this.getBrowserLanguages();
+        
+        for (let lang of browserLanguages) {
+            const primaryLang = lang.split('-')[0].toLowerCase();
+            if (this.supportedLanguages.includes(primaryLang)) {
+                return primaryLang;
+            }
+        }
+
+        return this.defaultLanguage;
+    }
+
+    getBrowserLanguages() {
+        const languages = [];
+        
+        if (navigator.languages) {
+            languages.push(...navigator.languages);
+        }
+        
+        if (navigator.language) {
+            languages.push(navigator.language);
+        }
+        
+        if (navigator.userLanguage) {
+            languages.push(navigator.userLanguage);
+        }
+        
+        return [...new Set(languages)];
+    }
+
+    saveLanguagePreference(lang) {
+        try {
+            localStorage.setItem('userLanguage', lang);
+            sessionStorage.setItem('currentLanguage', lang);
+        } catch (e) {
+            console.warn('Cannot save language preference:', e);
+        }
+    }
+
+    getSavedLanguage() {
+        try {
+            return localStorage.getItem('userLanguage') || sessionStorage.getItem('currentLanguage');
+        } catch (e) {
+            return null;
+        }
+    }
+
+    applyLanguage(lang) {
+        const finalLang = this.supportedLanguages.includes(lang) ? lang : this.defaultLanguage;
+        
+        document.getElementById('language').value = finalLang;
+        document.getElementById('authLanguage').value = finalLang;
+        
+        this.saveLanguagePreference(finalLang);
+        
+        updateLanguage();
+        
+        return finalLang;
+    }
+}
+
+const languageManager = new LanguageManager();
+
 function initializeLanguage() {
-    document.getElementById('language').value = 'ru';
-    document.getElementById('authLanguage').value = 'ru';
-    updateLanguage();
+    const detectedLang = languageManager.detectBrowserLanguage();
+    languageManager.applyLanguage(detectedLang);
+}
+
+function setAuthButtonLoading(button, isLoading) {
+    const lang = document.getElementById('authLanguage').value;
+    const t = translations[lang];
+    
+    if (isLoading) {
+        button.dataset.originalText = button.textContent;
+        button.textContent = t.authLoading;
+        button.disabled = true;
+    } else {
+        button.textContent = button.dataset.originalText || 
+                           (button.id === 'loginButton' ? t.loginButton : t.registerButton);
+        button.disabled = false;
+    }
+}
+
+class ApiClient {
+    constructor() {
+        this.baseUrl = '';
+    }
+
+    async request(endpoint, options = {}) {
+        const lang = document.getElementById('language').value;
+        const t = translations[lang];
+        
+        try {
+            const response = await fetch(endpoint, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...options.headers,
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error(t.sessionExpired);
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error(t.networkError);
+            }
+            throw error;
+        }
+    }
+
+    async authenticatedRequest(endpoint, options = {}) {
+        return this.request(endpoint, {
+            ...options,
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                ...options.headers,
+            },
+        });
+    }
+}
+
+const apiClient = new ApiClient();
+
+function validateEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }
 
 function toggleAuthForms() {
@@ -75,50 +226,44 @@ function toggleAuthForms() {
 }
 
 async function register(username, email, password) {
+    const registerBtn = document.getElementById('registerButton');
+    setAuthButtonLoading(registerBtn, true);
+
     try {
         const language = document.getElementById('authLanguage').value;
-        const response = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const data = await apiClient.request('/api/auth/register', {
+            method: 'POST', 
             body: JSON.stringify({ username, email, password, language })
         });
-        const data = await response.json();
-        if (response.ok) {
-            authToken = data.token;
-            currentUser = data.user;
-            localStorage.setItem('authToken', authToken);
-            toggleAuthForms();
-            return data;
-        } else {
-            throw new Error(data.error || 'Registration failed');
-        }
-    } catch (error) {
-        console.error('Registration error:', error);
-        throw error;
+        
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('authToken', authToken);
+        toggleAuthForms();
+        return data;
+    } finally {
+        setAuthButtonLoading(registerBtn, false);
     }
 }
 
 async function login(username, password) {
+    const loginBtn = document.getElementById('loginButton');
+    setAuthButtonLoading(loginBtn, true);
+
     try {
         const language = document.getElementById('authLanguage').value;
-        const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const data = await apiClient.request('/api/auth/login', {
+            method: 'POST', 
             body: JSON.stringify({ username, password, language })
         });
-        const data = await response.json();
-        if (response.ok) {
-            authToken = data.token;
-            currentUser = data.user;
-            localStorage.setItem('authToken', authToken);
-            toggleAuthForms();
-            return data;
-        } else {
-            throw new Error(data.error || 'Login failed');
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        throw error;
+        
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('authToken', authToken);
+        toggleAuthForms();
+        return data;
+    } finally {
+        setAuthButtonLoading(loginBtn, false);
     }
 }
 
@@ -133,31 +278,38 @@ function handleRegister() {
     const username = document.getElementById('authUsername').value;
     const email = document.getElementById('authEmail').value;
     const password = document.getElementById('authPassword').value;
+    const lang = document.getElementById('authLanguage').value;
+    const t = translations[lang];
     
     if (!username || !email || !password) {
-        const lang = document.getElementById('authLanguage').value;
-        const message = lang === 'ru' ? 'Пожалуйста, заполните все поля' : 'Please fill all fields';
-        alert(message);
+        alert(t.fillAllFields);
         return;
     }
     
-    register(username, email, password)
-        .catch(error => alert(error.message));
+    if (!validateEmail(email)) {
+        alert(t.validEmail);
+        return;
+    }
+    
+    register(username, email, password).catch(error => {
+        alert(error.message);
+    });
 }
 
 function handleLogin() {
     const username = document.getElementById('authUsername').value;
     const password = document.getElementById('authPassword').value;
+    const lang = document.getElementById('authLanguage').value;
+    const t = translations[lang];
     
     if (!username || !password) {
-        const lang = document.getElementById('authLanguage').value;
-        const message = lang === 'ru' ? 'Пожалуйста, заполните имя пользователя и пароль' : 'Please fill username and password';
-        alert(message);
+        alert(t.fillUsernamePassword);
         return;
     }
     
-    login(username, password)
-        .catch(error => alert(error.message));
+    login(username, password).catch(error => {
+        alert(error.message);
+    });
 }
 
 function handleLogout() {
@@ -167,21 +319,23 @@ function handleLogout() {
 function updateLanguage() {
     const lang = document.getElementById('language').value;
     const t = translations[lang];
-    document.getElementById('subtitle').textContent = t.subtitle;
-    document.getElementById('textLabel').textContent = t.textLabel;
-    document.getElementById('text').placeholder = t.textPlaceholder;
-    document.getElementById('languageLabel').textContent = t.languageLabel;
-    document.getElementById('submitButton').textContent = t.submitButton;
+
+    document.querySelectorAll('[data-translate-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-translate-placeholder');
+        if (t[key]) {
+            element.placeholder = t[key];
+        }
+    });
+    
+    Object.keys(t).forEach(key => {
+        const element = document.querySelector(`[data-translate="${key}"]`);
+        if (element) {
+            element.textContent = t[key];
+        }
+    });
+    
     document.getElementById('disclaimer-en').style.display = (lang === 'en') ? 'block' : 'none';
-    document.getElementById('disclaimer-ru').style.display = (lang === 'ru') ? 'block' : 'none';
-    document.getElementById('authTitle').textContent = t.loginTitle;
-    document.getElementById('authLanguageLabel').textContent = t.authLanguageLabel;
-    document.getElementById('authUsername').placeholder = t.usernamePlaceholder;
-    document.getElementById('authEmail').placeholder = t.emailPlaceholder;
-    document.getElementById('authPassword').placeholder = t.passwordPlaceholder;
-    document.getElementById('loginButton').textContent = t.loginButton;
-    document.getElementById('registerButton').textContent = t.registerButton;
-    document.getElementById('logoutButton').textContent = t.logoutButton;
+    document.getElementById('disclaimer-ru').style.display = (lang === 'ru') ? 'block' : 'none'; 
     
     if (currentUser) {
         document.getElementById('userGreeting').textContent = t.welcome + currentUser.username;
@@ -189,13 +343,13 @@ function updateLanguage() {
 }
 
 document.getElementById('authLanguage').addEventListener('change', function() {
-    document.getElementById('language').value = this.value;
-    updateLanguage();
+    const newLang = this.value;
+    languageManager.applyLanguage(newLang);
 });
 
 document.getElementById('language').addEventListener('change', function() {
-    document.getElementById('authLanguage').value = this.value;
-    updateLanguage();
+    const newLang = this.value;
+    languageManager.applyLanguage(newLang);
 });
 
 document.getElementById('analysisForm').addEventListener('submit', async (e) => {
@@ -203,8 +357,8 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
 
     if (!authToken) {
         const lang = document.getElementById('language').value;
-        const message = lang === 'ru' ? 'Пожалуйста, войдите в систему' : 'Please login first';
-        alert(message);
+        const t = translations[lang];
+        alert(t.sessionExpired);
         return;
     }
 
@@ -214,28 +368,19 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
     const lang = document.getElementById('language').value;
     const t = translations[lang];
     
-    button.textContent = lang === 'ru' ? 'Анализируем...' : 'Analyzing...';
+    button.textContent = t.loading;
     button.disabled = true;
     resultDiv.innerHTML = `<div class="loading">${t.loading}</div>`;
     
     try {
         const formData = new FormData(form);
-        const response = await fetch('/api/analyze', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authToken}`
-            },
+        const data = await apiClient.authenticatedRequest('/api/analyze', {
+            method: 'POST', 
             body: JSON.stringify({
                 text: formData.get('text'),
                 language: lang
             })
-        });
-        
-        const data = await response.json();
-        if (!response.ok) {
-            throw new Error(data.message || data.error || 'Analysis failed');
-        }
+        }); 
         
         resultDiv.innerHTML = `
             <div class="result-item"><div class="result-label">${t.sentiment}</div><div>${data.sentiment}</div></div>
@@ -248,21 +393,13 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
     } catch (error) {
         console.error('API Error:', error);
 
-        if (error.message.includes('401') || error.message.includes('token')) {
+        if (error.message.includes(t.sessionExpired)) {
             logout();
-            const lang = document.getElementById('language').value;
-            const message = lang === 'ru' ? 'Сессия истекла. Пожалуйста, войдите снова.' : 'Session expired. Please login again.';
-            alert(message);
+            alert(t.sessionExpired);
             return;
         }
         
-        if (error.message.includes('Text is too short') || error.message.includes('Текст слишком короткий')) {
-            resultDiv.innerHTML = `<div class="error"><strong>${t.error}</strong> ${error.message}</div>`;
-        } else if (error.message.includes('Text is too long') || error.message.includes('Текст слишком длинный')) {
-            resultDiv.innerHTML = `<div class="error"><strong>${t.error}</strong> ${error.message}</div>`;
-        } else {
-            resultDiv.innerHTML = `<div class="error"><strong>${t.error}</strong> ${error.message}</div>`; 
-        }
+        resultDiv.innerHTML = `<div class="error"><strong>${t.error}</strong> ${error.message}</div>`;
     } finally {
         button.textContent = t.submitButton;
         button.disabled = false;
@@ -272,10 +409,8 @@ document.getElementById('analysisForm').addEventListener('submit', async (e) => 
 document.addEventListener('DOMContentLoaded', () => {
     initializeLanguage();
     toggleAuthForms();
+    
+    document.getElementById('loginButton').setAttribute('data-translate', 'loginButton');
+    document.getElementById('registerButton').setAttribute('data-translate', 'registerButton');
+    document.getElementById('logoutButton').setAttribute('data-translate', 'logoutButton');
 });
-
-function initializeLanguage() {
-    document.getElementById('language').value = 'ru';
-    document.getElementById('authLanguage').value = 'ru';
-    updateLanguage();
-}

@@ -106,18 +106,28 @@ class SensitiveDataFilter(logging.Filter):
         return True
 
 def get_database_uri():
-    env_db_uri = os.getenv('DATABASE_URL')
-    if env_db_uri:
-        return env_db_uri
+    # SQLite RAILWAY
+    use_sqlite = os.getenv('USE_SQLITE', 'false').lower() == 'true'
     
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(base_dir, 'instance', 'mental_health_analysis.db')
-    
-    instance_dir = os.path.dirname(db_path)
-    os.makedirs(instance_dir, exist_ok=True)
-    logger.info(f"Ensured instance directory exists: {instance_dir}")
-    
-    return f'sqlite:///{db_path}'
+    if use_sqlite:
+        base_dir = os.path.abspath(os.path.dirname(__file__))
+        db_path = os.path.join(base_dir, 'instance', 'mental_health_analysis.db')
+        
+        instance_dir = os.path.dirname(db_path)
+        os.makedirs(instance_dir, exist_ok=True)
+        logger.info(f"🚀 Using SQLite database at: {db_path}")
+        
+        return f'sqlite:///{db_path}'
+    else:
+        env_db_uri = os.getenv('DATABASE_URL')
+        if env_db_uri:
+            return env_db_uri
+        else:
+            # local
+            base_dir = os.path.abspath(os.path.dirname(__file__))
+            db_path = os.path.join(base_dir, 'instance', 'mental_health_analysis.db')
+            os.makedirs(os.path.dirname(db_path), exist_ok=True)
+            return f'sqlite:///{db_path}'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = get_database_uri()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -129,6 +139,13 @@ app.logger.addFilter(sensitive_filter)
 logging.getLogger('werkzeug').addFilter(sensitive_filter)
 
 db.init_app(app) 
+
+with app.app_context():
+    try:
+        db.create_all()
+        logger.info("✅ Database tables created successfully!")
+    except Exception as e:
+        logger.error(f"❌ Error creating database tables: {e}")
 
 from src.models.sql_models import AnalysisResult, User
 from src.api.models import AnalysisRequest
@@ -244,10 +261,6 @@ def get_user_analyses(user_id):
         app.logger.error(f"Error fetching analyses for user {user_id}: {str(e)}")
         return jsonify({"error": "Failed to fetch analyses", "details": str(e)}), 500
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-        logger.info("Database tables created!")
-    
+if __name__ == '__main__': 
     logger.info("Starting development server...")
     app.run(debug=True, host='0.0.0.0', port=5000)
